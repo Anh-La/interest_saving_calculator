@@ -29,17 +29,17 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
+#'crispy_bootstrap5',
 INSTALLED_APPS = [
     'calculator',
     'crispy_forms',
-    'crispy_bootstrap5',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
