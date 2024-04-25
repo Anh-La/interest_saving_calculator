@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Investment Calculator</title>
+
+	 <!-- ================================
+    Start CSS
+    ================================= -->
+	<link href="https://bootswatch.com/5/cosmo/bootstrap.min.css" rel="stylesheet">
+	<link href="{% static 'css/style.css' %}" rel="stylesheet">
+    {% block extend_header%}{%endblock%}
+    <!-- ================================
+    End CSS
+    ================================= -->
+	<!-- ================================
+    Start Scripts
+    ================================= -->
+    <script src="{% static 'js/script.js' %}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    {% block extend_footer %}{%endblock%}
+    <!-- ================================
+    End Scripts
+    ================================= -->
+
+</head>
+
+<body>
+	{% block content %}
+	{% endblock content %}
+
+</body>
+
+</html>

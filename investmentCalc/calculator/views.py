@@ -1,3 +1,5 @@
+import json
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 from .forms import InvestmentForm
@@ -14,7 +16,7 @@ class Index(View):
 			# set up default values
 			total_result = form.cleaned_data['starting_amount']
 			total_interest = 0
-			yearly_results = {} #range 
+			yearly_results = {} #range
 
 			for i in range(1, int(form.cleaned_data['number_of_years'] + 1)):
 				yearly_results[i] = {}
@@ -38,11 +40,10 @@ class Index(View):
 					'number_of_years': int(form.cleaned_data['number_of_years']),
 					'rate_of_return': float(form.cleaned_data['return_rate']),
 					'original_investment': float(form.cleaned_data['starting_amount']),
-					'additional_investment': float(form.cleaned_data['annual_additional_contribution'])
+					'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
+					'form':form
 				}
 
 			# render the template
-			return render(request, 'calculator/result.html', context)
-
-
-
+			return render(request, 'calculator/index.html', context)
+		

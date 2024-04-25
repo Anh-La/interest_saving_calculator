@@ -1,0 +1,29 @@
+<div class="p-3 border bg-light">
+    <h1>Investment Results</h1>
+    <div class="mt-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Year</th>
+                    <th scope="col">Original Investment</th>
+                    <th scope="col">Annual additional investment</th>
+                    <th scope="col">Rate of return</th>
+                    <th scope="col">Accumulated Interest</th>
+                    <th scope="col">Accumulated Investment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in yearly_results.items %}
+                <tr>
+                    <th scope="row">{{ key }}</th>
+                    <td>{{ original_investment}}</td>
+                    <td>{{ additional_investment }}</td>
+                    <td>{{ rate_of_return }}</td>
+                    <td>{{ value.interest }}</td>
+                    <td>{{ value.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
