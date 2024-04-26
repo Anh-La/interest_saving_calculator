@@ -11,6 +11,9 @@ class Index(View):
 
 	def post(self, request):
 		form = InvestmentForm(request.POST)
+		labels =[]
+		data1 =[]
+		data2 =[]
 
 		if form.is_valid():
 			# set up default values
@@ -33,6 +36,11 @@ class Index(View):
 				yearly_results[i]['interest'] = round(total_interest, 2) #round the figures to 2 decimals only
 				yearly_results[i]['total'] = round(total_result, 2) #round the figures to 2 decimals only
 
+				# add to dataset for charts
+				labels.append(i)
+				data1.append(total_interest)
+				data2.append(total_result)
+
 				# create context
 				context = {
 					'total_result': round(total_result, 2), 
@@ -41,7 +49,10 @@ class Index(View):
 					'rate_of_return': float(form.cleaned_data['return_rate']),
 					'original_investment': float(form.cleaned_data['starting_amount']),
 					'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
-					'form':form
+					'form':form,
+					'labels':json.dumps(labels),
+					'data1':json.dumps(data1),
+					'data2':json.dumps(data2)
 				}
 
 			# render the template

@@ -1,35 +1,33 @@
 <div class="p-3 border bg-light">
 	<h1>Charts</h1>
-	{% for key, value in yearly_results.items %}
 	<canvas id="myChart"></canvas>
 	<script>
-		//const xValues = ["Year 1", "Year 2", "Year 3", "Year 4", "Year 5"];
-		const xValues = ['{{ key }}',];
-		
-		const yValues_interest = [50,60,70,80,90,100,110,120,130,140,150];
-		const yValues_investment = [100,200,300,400,500,600,700,800,900,1000];
+		const xValues = JSON.parse('{{ labels|safe }}');
+		const yValues_interest = JSON.parse('{{ data1|safe }}');
+		const yValues_investment = JSON.parse('{{ data2|safe }}');
 		const barColors = ["red", "green","blue","orange","brown"];
+
 		//set up	
 		const data = {
 			labels: xValues,
 			datasets: [{
 				label: 'Interest',
 				data: yValues_interest,
-				backgroundColor: "red",
+				backgroundColor: "green",
 				borderWidth: 1,
-				fill: false
+				
 			},
 			{
 				label: 'total investment',
 				data: yValues_investment,
-				backgroundColor: "green",
+				backgroundColor: "blue",
 				borderWidth: 1,
-				fill: false
+				
 			}]
 		};
 			//config
 			const config ={
-				type: 'line',
+				type: 'bar',
 				data,
 				options: {
 					scales: {
@@ -43,5 +41,4 @@
 				config
 			);
 	</script>
-	{% endfor %}
 </div>

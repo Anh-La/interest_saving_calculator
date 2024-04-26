@@ -13,23 +13,21 @@
 					{% csrf_token %}
 					{{ form|crispy }}
 					<button class="btn btn-primary" type="submit">Calculate</button>
-				</form>		
-			</div>
-			<div class="col order-1">
-				{% include 'calculator/parts/line_chart.html' %}
+				</form>	
 			</div>
 	  	</div>
 	  </div>	 
-
 	<div class="col-6">
-		<div class="row">
-			<div class="col">
-				{% include 'calculator/parts/summary.html' %}
-			</div>
-			<div class="col order-1">
-				{% include 'calculator/parts/schedule.html' %}
-			</div>
+		<div class="col">
+			{% include 'calculator/parts/line_chart.html' %}
 		</div>	
+		<div class="col">
+			{% include 'calculator/parts/summary.html' %}
+		</div>
+		<br>
+		<div class="col">
+			{% include 'calculator/parts/schedule.html' %}
+		</div>
 	</div> 
 
 	</div>
