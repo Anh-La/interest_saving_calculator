@@ -1,14 +1,22 @@
 {% extends 'calculator/parts/base.html' %}
 {% load crispy_forms_tags %}
-
 {% block content %}
 
 <div class="container">
+	<!-- Section 1: assumption -->
+	<div class = "row g-2">
+		<h3>Saving Calculator</h3>
+		<p>Have a go. Get some fast indicative answers about your savings with this easy calculator. 
+			See how your savings can grow with regular monthly deposits.</p>
+
+		{% include 'calculator/parts/assumption.html' %}
+	</div>
+	<!-- Section 2: Calculator & graphs -->
 	<div class="row g-2">
 	  <div class="col-4">
 		<div class="row">
 			<div class="col">
-				<h1>Investment Calculator</h1>
+				<h4>Your Saving Details</h4>
 				<form method="POST">
 					{% csrf_token %}
 					{{ form|crispy }}
