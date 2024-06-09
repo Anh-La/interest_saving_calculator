@@ -8,7 +8,7 @@
 		<p>See how your savings can grow with regular monthly deposits.
 		Have a go. Get some fast indicative answers about your savings with this easy calculator.</p>
 	  </div>
-	  
+
 	<div class="accordion accordion-flush" id="accordionFlushExample">
 		<!-- Section 1: general info -->
 		<div class="accordion-item">
@@ -56,7 +56,26 @@
 			<div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
 			  <div class="accordion-body">
 			  {% include 'calculator/parts/summary.html' %}
-			  {% include 'calculator/parts/line_chart.html' %}
+				<ul class="nav nav-tabs">
+					<li class="nav-item">
+					<a class="nav-link active" aria-current="page" href="#">Stacked Bar</a>
+					</li>
+					<li class="nav-item">
+					<a class="nav-link" href="#">Bar</a>
+					</li>
+					<li class="nav-item">
+					<a class="nav-link" href="#">Pie</a>
+					</li>
+					<li class="nav-item">
+					<a class="nav-link disabled" aria-disabled="true">Doughnut</a>
+					</li>
+					<li class="nav-item">
+					<a class="nav-link disabled" aria-disabled="true">Mixed</a>
+					</li>
+					<li class="nav-item">
+					<a class="nav-link disabled" aria-disabled="true">Area</a>
+					</li>
+				</ul> 
 			</div>
 			</div>
 		  </div>

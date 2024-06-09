@@ -1,0 +1,44 @@
+<div class="p-3 border bg-light">
+	<canvas id="myChart"></canvas>
+	
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+	<script>
+		const xValues = JSON.parse('{{ labels|safe }}');
+		const yValues_interest = JSON.parse('{{ data1|safe }}');
+		const yValues_investment = JSON.parse('{{ data2|safe }}');
+
+		//set up	
+		const data = {
+			labels: xValues,
+			datasets: [{
+				label: 'Interest',
+				data: yValues_interest,
+				backgroundColor: "green",
+				borderWidth: 1,
+			},
+			{
+				label: 'total investment',
+				data: yValues_investment,
+				backgroundColor: "blue",
+				borderWidth: 1,
+				
+			}]
+		};
+			//config
+			const config ={
+				type: 'doughnut',
+				data,
+				options: {
+					scales: {
+						y: {beginAtZero: true}
+					}
+				}
+			};
+			//render init block
+			const myChart = new Chart(
+				document.getElementById('myChart'),
+				config
+			);
+	</script>
+</div>
