@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-#'crispy_bootstrap5',
+
 INSTALLED_APPS = [
     'calculator',
     'crispy_forms',
