@@ -2,42 +2,79 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<div class="container">
-	<!-- Section 1: assumption -->
-	<div class = "row g-2">
-		<h3>Saving Calculator</h3>
-		<p>Have a go. Get some fast indicative answers about your savings with this easy calculator. 
-			See how your savings can grow with regular monthly deposits.</p>
-
-		{% include 'calculator/parts/assumption.html' %}
-	</div>
-	<!-- Section 2: Calculator & graphs -->
-	<div class="row g-2">
-	  <div class="col-4">
-		<div class="row">
-			<div class="col">
-				<h4>Your Saving Details</h4>
-				<form method="POST">
-					{% csrf_token %}
-					{{ form|crispy }}
-					<button class="btn btn-primary" type="submit">Calculate</button>
-				</form>	
+<div class="container">	
+	<div class="p-3 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
+		<h2>Saving Calculator</h2>
+		<p>See how your savings can grow with regular monthly deposits.
+		Have a go. Get some fast indicative answers about your savings with this easy calculator.</p>
+	  </div>
+	  
+	<div class="accordion accordion-flush" id="accordionFlushExample">
+		<!-- Section 1: general info -->
+		<div class="accordion-item">
+		  <h2 class="accordion-header">
+			<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+			<h5>General Information</h5>
+			</button>
+		  </h2>
+		  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+			<div class="accordion-body">{% include 'calculator/parts/general_info.html' %}</div>
+		  </div>
+		</div>
+		<!-- Section 2: assumptions -->
+		<div class="accordion-item">
+		  <h2 class="accordion-header">
+			<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+			<h5>Assumptions</h5>
+			</button>
+		  </h2>
+		  <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+			<div class="accordion-body">{% include 'calculator/parts/assumption.html' %}</div>
+		  </div>
+		</div>
+		<!-- Section 3: calculator -->
+		<div class="accordion-item">
+			<h2 class="accordion-header">
+			  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseTwo">
+			  <h5>Your Saving Details</h5>
+			  </button>
+			</h2>
+			<div id="flush-collapseThree" class="accordion-collapse collapse show" data-bs-parent="#accordionFlushExample">
+			  <div class="accordion-body">
+				{% include 'calculator/parts/calculator.html' %}
+				{% include 'calculator/parts/summary.html' %}
 			</div>
-	  	</div>
-	  </div>	 
-	<div class="col">
-		<div class="col">
-			{% include 'calculator/parts/line_chart.html' %}
-		</div>	
-		<div class="col">
-			{% include 'calculator/parts/summary.html' %}
-		</div>
-		<div class="col">
-			{% include 'calculator/parts/schedule.html' %}
-		</div>
-	</div> 
-
-	</div>
+			</div>
+		  </div>
+		<!-- Section 4: charts -->
+		<div class="accordion-item">
+			<h2 class="accordion-header">
+			  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseTwo">
+			  <h5>Charts</h5>
+			  </button>
+			</h2>
+			<div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+			  <div class="accordion-body">
+			  {% include 'calculator/parts/summary.html' %}
+			  {% include 'calculator/parts/line_chart.html' %}
+			</div>
+			</div>
+		  </div>
+		  <!-- Section 5: Schedule -->
+		<div class="accordion-item">
+			<h2 class="accordion-header">
+			  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseTwo">
+			  <h5>Schedule</h5>
+			  </button>
+			</h2>
+			<div id="flush-collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+			  <div class="accordion-body">
+			  {% include 'calculator/parts/summary.html' %}
+			  {% include 'calculator/parts/schedule.html' %}
+				</div>
+			</div>
+		  </div>
+	  </div>
   </div>
 	
 {% endblock content %}
