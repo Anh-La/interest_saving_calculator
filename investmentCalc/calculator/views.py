@@ -40,9 +40,9 @@ class Index(View):
 				# add to dataset for charts
 				labels.append(i)
 				data1.append(total_interest)
-				data2.append(total_result)
-				data3 = sum([float(data1) for data1 in data1])
-				data4 = sum([float(data2) for data2 in data2])
+				data2.append(total_result)		
+				data4 = float(form.cleaned_data['starting_amount']) + float(form.cleaned_data['annual_additional_contribution'])
+				data3 = float(total_result)- data4
 
 				# create context
 				context = {
@@ -56,7 +56,7 @@ class Index(View):
 					'labels':json.dumps(labels),
 					'data1':json.dumps(data1),
 					'data2':json.dumps(data2),
-					'data3':json.dumps(data3),
+					'data3':json.dumps(round(data3,2)),
 					'data4':json.dumps(data4)
 
 				}
