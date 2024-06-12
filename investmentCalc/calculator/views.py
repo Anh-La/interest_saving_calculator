@@ -1,5 +1,4 @@
 import json
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 from .forms import InvestmentForm
@@ -14,6 +13,8 @@ class Index(View):
 		labels =[]
 		data1 =[]
 		data2 =[]
+		data3 = float
+		data4 = float
 
 		if form.is_valid():
 			# set up default values
@@ -40,6 +41,8 @@ class Index(View):
 				labels.append(i)
 				data1.append(total_interest)
 				data2.append(total_result)
+				data3 = sum([float(data1) for data1 in data1])
+				data4 = sum([float(data2) for data2 in data2])
 
 				# create context
 				context = {
@@ -52,9 +55,11 @@ class Index(View):
 					'form':form,
 					'labels':json.dumps(labels),
 					'data1':json.dumps(data1),
-					'data2':json.dumps(data2)
+					'data2':json.dumps(data2),
+					'data3':json.dumps(data3),
+					'data4':json.dumps(data4)
+
 				}
 
 			# render the template
 			return render(request, 'calculator/index.html', context)
-		

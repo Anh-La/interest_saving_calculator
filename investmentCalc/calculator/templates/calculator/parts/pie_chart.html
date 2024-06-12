@@ -4,22 +4,21 @@
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
 	<script>
-		const xValues = JSON.parse('{{ labels|safe }}');
-		const yValues_interest = JSON.parse('{{ data1|safe }}');
-		const yValues_investment = JSON.parse('{{ data2|safe }}');
+		const interest = JSON.parse('{{ data3|safe }}');
+		const saving = JSON.parse('{{ data4|safe }}');
 
 		//set up	
 		const data = {
-			labels: xValues,
+			labels: 'interest,saving',
 			datasets: [{
 				label: 'Interest',
-				data: yValues_interest,
+				data: interest,
 				backgroundColor: "green",
 				borderWidth: 1,
 			},
 			{
-				label: 'total investment',
-				data: yValues_investment,
+				label: 'total saving',
+				data: saving,
 				backgroundColor: "blue",
 				borderWidth: 1,
 				
@@ -30,9 +29,6 @@
 				type: 'pie',
 				data,
 				options: {
-					scales: {
-						y: {beginAtZero: true}
-					}
 				}
 			};
 			//render init block
