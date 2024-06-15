@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from calculator.views import Index
+from calculator.views import Index, generate_pdf
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Index.as_view(), name='index'),
+    path('generate-pdf/', generate_pdf, name='generate_pdf'),
 ]
