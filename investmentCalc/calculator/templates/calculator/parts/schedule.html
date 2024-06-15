@@ -1,36 +1,31 @@
 <div class="container p-3 border bg-light">    
     <div class="table-responsive-sm">
-        <table class="table table-sm table-striped header-fixed">
+        <table class="table table-sm table-striped header-fixed caption-top">
+            <caption>Your saving details</caption>
             <thead>
                 <tr>
                     <th>Year</th>
-                    <th>Original Investment</th>
-                    <th>Annual additional investment</th>
-                    <th>Rate of return</th>
+                    <th>Additional saving</th>
                     <th>Accumulated Interest</th>
-                    <th>Accumulated Investment</th>
+                    <th>Total Saving</th>
                 </tr>
             </thead>
             <tbody>
                 {% for key, value in yearly_results.items %}
                 <tr>
-                    <th scope="row">{{ key }}</th>
-                    <td>{{ original_investment}}</td>
-                    <td>{{ additional_investment }}</td>
-                    <td>{{ rate_of_return }}</td>
-                    <td>{{ value.interest }}</td>
-                    <td>{{ value.total }}</td>
+                    <th class="text-end" scope="row">{{ key }}</th>
+                    <td class="text-end">{{ additional_investment }}</td>
+                    <td class="text-end">{{ value.interest }}</td>
+                    <td class="text-end">{{ value.total }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
             <tfoot>
                 <tr>
                     <th scope="row" class="table-success">Total</th>
-                    <td class="table-success">{{ original_investment}}</td>
-                    <td class="table-success">{{ data4 }}</td>
-                    <td class="table-success">{{ rate_of_return }}</td>
-                    <td class="table-success">{{ data3 }}</td>
-                    <td class="table-success">{{ total_result }}</td>
+                    <td class="text-end table-success">{{ data4 }}</td>
+                    <td class="text-end table-success">{{ data3 }}</td>
+                    <td class="text-end table-success">{{ total_result }}</td>
                 </tr>
             </tfoot>
         </table>

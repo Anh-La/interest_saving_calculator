@@ -1,7 +1,27 @@
-<div class="p-3 border bg-light">
-    <h3>After {{ number_of_years }} years</h3>
-    <h3>Initial saving: ${{ original_investment }}</h3>
-    <h3>total saving: ${{ total_result }}</h3>
-    <h3>total additional saving: ${{ data4 }}</h3>
-    <h3>total interest: ${{ data3 }}</h3>
+<div class="p-3 border bg-light table-responsive">
+    <table class="table table-primary">
+        <tbody>
+            <tr>
+                <th>Number of years:</th>
+                <td class="text-end h5">{{ number_of_years }}</td>
+            </tr>
+            <tr>
+                <th>Initial saving: </th>
+                <td class="text-end h5">${{ original_investment }}</td>
+            </tr>
+            <tr>
+                <th>total saving: </th>
+                <td class="text-end h5">${{ total_result }}</td>
+            </tr>
+            <tr>
+                <th>total additional saving: </th>
+                <td class="text-end h5">${{ data4 }}</td>
+            </tr>
+            <tr>
+                <th>total interest: </th>
+                <td class="text-end h5">${{ data3 }}</td>
+            </tr>
+        </tbody>
+    </table>
+    
 </div>
