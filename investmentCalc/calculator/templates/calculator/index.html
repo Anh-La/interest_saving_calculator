@@ -15,10 +15,12 @@
 		</div>			
 		<div class="col-5">
 			{% include 'calculator/parts/summary.html' %}
+
+			<p><a href="{% url 'generate_pdf' %}" download>Download report (PDF)</a></p>
+
+			<div id="jsonOutput"></div>
+			
 			<br>
-			{% include 'calculator/parts/schedule.html' %}
-		</div>
-		<div class="col-4">
 			<div class="accordion accordion-flush" id="accordionFlushExample">
 				<!-- Section 1: general info -->
 				<div class="accordion-item">
@@ -27,7 +29,7 @@
 					<h5>General Information</h5>
 					</button>
 				</h2>
-				<div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				<div id="flush-collapseOne" class="accordion-collapse show" data-bs-parent="#accordionFlushExample">
 					<div class="accordion-body">{% include 'calculator/parts/general_info.html' %}</div>
 				</div>
 				</div>
@@ -41,60 +43,20 @@
 				<div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
 					<div class="accordion-body">{% include 'calculator/parts/assumption.html' %}</div>
 				</div>
-				</div>
-				<!-- Section 4: Bar charts -->
-				<div class="accordion-item">
-					<h2 class="accordion-header">
-					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
-					<h5>Bar Charts</h5>
-					</button>
-					</h2>
-					<div id="flush-collapseFour" class="accordion-collapse collapse show" data-bs-parent="#accordionFlushExample">
-					<div class="accordion-body">
-					{% include 'calculator/parts/bar_chart.html' %}			 
-					</div>
-					</div>
-				</div>
-				<!-- Section 5: Stacked bar charts -->
-				<div class="accordion-item">
-					<h2 class="accordion-header">
-					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
-					<h5>Stacked Bar Charts</h5>
-					</button>
-					</h2>
-					<div id="flush-collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-					<div class="accordion-body">
-					{% include 'calculator/parts/stacked_bar_chart.html' %}		 
-					</div>
-					</div>
-				</div>
-				<!-- Section 6: Pie charts -->
-				<div class="accordion-item">
-					<h2 class="accordion-header">
-					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSix" aria-expanded="false" aria-controls="flush-collapseSix">
-					<h5>Pie Charts</h5>
-					</button>
-					</h2>
-					<div id="flush-collapseSix" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-					<div class="accordion-body">
-					{% include 'calculator/parts/pie_chart.html' %}			 
-					</div>
-					</div>
-				</div>
-				<!-- Section 7: Doughnut charts -->
-				<div class="accordion-item">
-					<h2 class="accordion-header">
-					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSeven" aria-expanded="false" aria-controls="flush-collapseSeven">
-					<h5>Doughnut Charts</h5>
-					</button>
-					</h2>
-					<div id="flush-collapseSeven" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-					<div class="accordion-body">
-					{% include 'calculator/parts/doughnut_chart.html' %}				 
-					</div>
-					</div>
-				</div>      
+				</div>    
+			</div>			
+		</div>
+		<div class="col-4">
+			<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+				<button class="btn btn-primary me-md-2" type="button">Bar</button>
+				<button class="btn btn-primary" type="button">Line</button>
+				<button class="btn btn-primary" type="button">Doughnut</button>
+				<button class="btn btn-primary" type="button">PolarArea</button>
+				<button class="btn btn-primary" type="button">Radar</button>
 			</div>
+			{% include 'calculator/parts/chart.html' %}
+			<br>
+			{% include 'calculator/parts/schedule.html' %}
 		</div>
   </div>
 	
