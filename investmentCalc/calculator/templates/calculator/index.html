@@ -48,11 +48,11 @@
 		</div>
 		<div class="col-4">
 			<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-				<button class="btn btn-primary me-md-2" type="button">Bar</button>
-				<button class="btn btn-primary" type="button">Line</button>
-				<button class="btn btn-primary" type="button">Doughnut</button>
-				<button class="btn btn-primary" type="button">PolarArea</button>
-				<button class="btn btn-primary" type="button">Radar</button>
+				<button onclick="setChartType('bar')">Bars</button>
+				<button onclick="setChartType('line')">Line</button>
+				<button onclick="setChartType('doughnut')">Doughnut</button>
+				<button onclick="setChartType('polarArea')">PolarArea</button>
+				<button onclick="setChartType('radar')">Radar</button>
 			</div>
 			{% include 'calculator/parts/chart.html' %}
 			<br>

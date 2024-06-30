@@ -4,7 +4,7 @@ from django.views import View
 from .forms import InvestmentForm
 
 import io
-from django.http import FileResponse
+from django.http import FileResponse, JsonResponse
 from reportlab.pdfgen import canvas
 
 class Index(View):
@@ -24,7 +24,7 @@ class Index(View):
 			# set up default values
 			total_result = form.cleaned_data['starting_amount']
 			total_interest = 0
-			yearly_results = {} #range
+			yearly_results = {} #range	
 
 			for i in range(1, int(form.cleaned_data['number_of_years'] + 1)):
 				yearly_results[i] = {}
@@ -47,6 +47,17 @@ class Index(View):
 				data2.append(total_result)		
 				data4 = float(form.cleaned_data['starting_amount']) + float(form.cleaned_data['annual_additional_contribution'])
 				data3 = float(total_result)- data4
+				data = {
+                'year': labels,
+                'interest': data1,
+            	}
+
+				# Convert data to JSON
+				json_data = json.dumps(data)
+
+				# Save JSON to a file
+				with open('data.json', 'w') as json_file:
+					json_file.write(json_data)
 
 				# create context
 				context = {

@@ -3,11 +3,11 @@
 	
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
-	<script>
+	<!--script>
 		const xValues = JSON.parse('{{ labels|safe }}');
 		const yValues_interest = JSON.parse('{{ data1|safe }}');
 		const yValues_investment = JSON.parse('{{ data2|safe }}');
-		const barColors = ["red", "green","blue","orange","brown"];
+		const barColors = ["red", "green","blue","orange","brown"];	
 
 		//set up	
 		const data = {
@@ -42,5 +42,62 @@
 				document.getElementById('myChart'),
 				config
 			);
+	</script-->
+	<script>
+		const ctx = document.getElementById('myChart');
+		/*
+		create two global variables, the `myChart` variable
+		and the `JsonData` variable. We are going assign to them values that
+		we create inside the functions that we will use down the script.
+		*/
+		let myChart;
+		let Jsondata;
+
+		/* Next we are going to send a get request to the `data.json`file to retrieve the file's data.*/
+		fetch("data.json")
+		.then(function(response){
+		if(response.ok == true){
+			return response.json();
+		}
+		})
+		.then(function(data){ 
+		/* Assigning the data from the JSON file to the `jsonData` global variable.*/
+			Jsondata = data;
+			createChart(Jsondata,'bar');
+		})
+
+		function createChart(data,type){
+			myChart =	new Chart(ctx, {
+							type: type,
+							data: {
+							labels: data.map(row=>row.year),
+							datasets: [{
+								label: '# of Income',
+								data: data.map(row=>row.interest),
+								borderWidth: 1
+							}]
+							},
+							options: {
+							scales: {
+								y: {
+								beginAtZero: true
+								}
+							}
+							}
+						});
+			}
+		/*
+		The `setChartType` function will dynamically change the chart type
+		depending on which button we click on in the index file.
+		*/
+		function setChartType(chartType){
+		// To change the chart type we have first to destroy the current
+		// chart object. 
+		myChart.destroy();
+		
+		// Next we render a new one passing-in, the `Jsondata`
+		// and the `chartType` that the button sends.
+		createChart(Jsondata, chartType);
+		}
 	</script>
 </div>
