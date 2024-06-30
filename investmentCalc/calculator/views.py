@@ -48,10 +48,13 @@ class Index(View):
 				data4 = float(form.cleaned_data['starting_amount']) + float(form.cleaned_data['annual_additional_contribution'])
 				data3 = float(total_result)- data4
 				data = {
-                'year': labels,
-                'interest': data1,
-				'total_saving': data2,
-            	}
+                'total_result': round(total_result, 2),
+                'interest': yearly_results,
+                'year': int(form.cleaned_data['number_of_years']),
+                'rate_of_return': float(form.cleaned_data['return_rate']),
+                'original_investment': float(form.cleaned_data['starting_amount']),
+                'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
+            }
 
 				# Convert data to JSON
 				json_data = json.dumps(data)	

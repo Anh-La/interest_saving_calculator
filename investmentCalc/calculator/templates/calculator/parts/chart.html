@@ -1,4 +1,4 @@
-<div class="p-3 border bg-light">
+<div id="results" class="p-3 border bg-light">
 	<canvas id="myChart"></canvas>
 	
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
@@ -59,9 +59,24 @@
 		.then(function(data) {
 			// Log the data to debug
 			console.log('Fetched data:', data);
+			// Reformating the JSON data to the expected structure
+			const reformattedData = {
+                    year: [],
+                    interest: [],
+                    total_saving: []
+                };
+
+                for (const [key, value] of Object.entries(data.interest)) {
+                    reformattedData.year.push(key);
+                    reformattedData.interest.push(value.interest);
+                    reformattedData.total_saving.push(value.total);
+                }
+
+                // Assigning the data from the JSON file to the `Jsondata` global variable
+                Jsondata = reformattedData;
 
 			// Assigning the data from the JSON file to the `Jsondata` global variable
-			Jsondata = data;
+			// Jsondata = data;
 			createChart(Jsondata, 'bar');
 		})
 		.catch(function(error) {

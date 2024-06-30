@@ -1,11 +1,48 @@
 {% load crispy_forms_tags %}
+
 <form id="dataForm" method="POST">
     {% csrf_token %}
     {{ form|crispy }}
     <button class="btn btn-primary" onclick="convertToJson()" type="submit">Calculate</button>
 </form>
-<!--// Function to convert data from the form to Json from script.js>
-<div id="jsonOutput"></div-->
 
+<!--Auto fetch data from the form-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script>
+$(document).ready(function() {
+    // Function to update results on form change
+    $('#dataForm input').on('input', function() {
+
+        // Serialize form data to send via AJAX
+        var formData = $('#dataForm').serialize();
+
+        // Convert form data to JSON
+        var jsonData = convertToJson(formData);
+
+        // Send AJAX request to update results
+        $.ajax({
+            type: 'POST',
+            url: '{% url "index" %}',  // Replace with your view URL
+            data: formData,
+            success: function(response) {
+                // Update results on success
+                $('#results').html(response);
+            }
+        });
+    });
+    // Function to convert form data to JSON
+    function convertToJson(formData) {
+        var formDataObject = {};
+        formData.forEach(function(field) {
+            formDataObject[field.name] = field.value;
+        });
+
+        var jsonData = JSON.stringify(formDataObject);
+        console.log(jsonData); // Optional: Log JSON data for debugging
+
+        return jsonData;
+    }
+});
+</script>
 

@@ -9,8 +9,6 @@
         var additionalAmountInput = document.getElementById('annual_additional_contribution');
         var additionalRangeInput = document.getElementById('annual_additional_contribution_range');
 
-        //submission on timer
-        //format number
         //match value field with value range
         initialAmountInput.addEventListener('input', function() {
             initialRangeInput.value = initialAmountInput.value;
@@ -48,13 +46,14 @@
     });
 
     // Function to convert data from the form to Json
-    function convertToJson() {
-        let form = document.getElementById("dataForm");
-        let formData = {};
-        for (let i = 0; i < form.elements.length; i++) {
-            let element = form.elements[i];
-            if (element.type !== "submit") {
-                formData[element.name] = element.value;
-            }
-        }   
-    }
+    // function convertToJson() {
+    //     let form = document.getElementById("dataForm");
+    //     let formData = {};
+    //     for (let i = 0; i < form.elements.length; i++) {
+    //         let element = form.elements[i];
+    //         if (element.type !== "submit") {
+    //             formData[element.name] = element.value;
+    //         }
+    //     }   
+    // }
+    
