@@ -50,13 +50,14 @@ class Index(View):
 				data = {
                 'year': labels,
                 'interest': data1,
+				'total_saving': data2,
             	}
 
 				# Convert data to JSON
-				json_data = json.dumps(data)
+				json_data = json.dumps(data)	
 
 				# Save JSON to a file
-				with open('data.json', 'w') as json_file:
+				with open('static/data.json', 'w') as json_file:
 					json_file.write(json_data)
 
 				# create context
