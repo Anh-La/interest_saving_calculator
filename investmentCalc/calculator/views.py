@@ -1,4 +1,5 @@
 import json
+import csv
 import os
 from django.shortcuts import render
 from django.views import View
@@ -10,7 +11,7 @@ from reportlab.lib import colors
 from reportlab.graphics.shapes import Drawing
 from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageTemplate
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from datetime import datetime
@@ -232,3 +233,27 @@ def create_bar_chart(data):
 
     drawing.add(bc)
     return drawing
+
+def generate_csv(request):
+    # Read JSON data from a file
+    json_file_path = os.path.join(os.path.dirname(__file__), 'data.json')
+    with open(json_file_path, 'r') as json_file:
+        data = json.load(json_file)
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="interest_data.csv"'},
+    )
+
+    writer = csv.writer(response)
+
+    # Write headers
+    headers = ["Year", "Interest", "Total"]
+    writer.writerow(headers)
+    
+    # Write data rows
+    for year, values in data["interest"].items():
+        writer.writerow([year, values["interest"], values["total"]])
+
+    return response
