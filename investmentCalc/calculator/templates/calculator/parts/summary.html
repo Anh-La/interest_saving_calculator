@@ -1,4 +1,10 @@
 <div class="p-3 border bg-light table-responsive">
+    <a href="{% url 'generate_pdf' %}" download>
+        <i class="bi bi-filetype-pdf" style="font-size: 2rem; color: cornflowerblue;"></i>
+    </a>
+    <a href="{% url 'generate_csv' %}" download>
+        <i class="bi bi-filetype-csv" style="font-size: 2rem; color: cornflowerblue;"></i>
+    </a>
     <table class="table table-primary">
         <tbody>
             <tr>

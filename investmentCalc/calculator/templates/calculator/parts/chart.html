@@ -1,4 +1,12 @@
 <div id="results" class="p-3 border bg-light">
+	<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+		<button onclick="setChartType('bar')">Bars</button>
+		<button onclick="setChartType('line')">Line</button>
+		<button onclick="setChartType('doughnut')">Doughnut</button>
+		<button onclick="setChartType('polarArea')">PolarArea</button>
+		<button onclick="setChartType('radar')">Radar</button>
+	</div>
+	
 	<canvas id="myChart"></canvas>
 	
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>

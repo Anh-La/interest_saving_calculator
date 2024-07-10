@@ -69,7 +69,7 @@ class Index(View):
 				json_data = json.dumps(data)	
 
 				# Save JSON to a file
-				with open('calculator/data.json', 'w') as json_file:
+				with open('data.json', 'w') as json_file:
 					json_file.write(json_data)
 
 				# create context
