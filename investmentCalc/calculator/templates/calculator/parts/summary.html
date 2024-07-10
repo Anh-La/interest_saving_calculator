@@ -1,32 +1,40 @@
 <div class="p-3 border bg-light table-responsive">
-    <a href="{% url 'generate_pdf' %}" download>
-        <i class="bi bi-filetype-pdf" style="font-size: 2rem; color: cornflowerblue;"></i>
-    </a>
-    <a href="{% url 'generate_csv' %}" download>
-        <i class="bi bi-filetype-csv" style="font-size: 2rem; color: cornflowerblue;"></i>
-    </a>
+    <div class="row">
+        <div class="col h5">YOUR SAVING SUMMARY</div>
+        <div class="col-6 text-end">
+            <a href="{% url 'generate_pdf' %}" download>
+                <i class="bi bi-filetype-pdf" style="font-size: 2rem; color: cornflowerblue;"></i>
+            </a>
+            <a href="{% url 'generate_csv' %}" download>
+                <i class="bi bi-filetype-csv" style="font-size: 2rem; color: cornflowerblue;"></i>
+            </a>
+        </div>
+    </div>
+    
     <table class="table table-primary">
         <tbody>
             <tr>
-                <th>Number of years:</th>
+                <th>Year of saving:</th>
                 <td class="text-end h5">{{ number_of_years }}</td>
             </tr>
             <tr>
-                <th>Initial saving: </th>
-                <td class="text-end h5">${{ original_investment }}</td>
+                <th>Initial deposit: </th>
+                <td class="text-end h5">{{ original_investment }}</td>
             </tr>
             <tr>
-                <th>total saving: </th>
-                <td class="text-end h5">${{ total_result }}</td>
+                <th>Total additional saving: </th>
+                <td class="text-end h5">{{ total_deposit }}</td>
             </tr>
             <tr>
-                <th>total additional saving: </th>
-                <td class="text-end h5">${{ data4 }}</td>
+                <th>Total interest: </th>
+                <td class="text-end h5">{{ total_interest }}</td>
             </tr>
             <tr>
-                <th>total interest: </th>
-                <td class="text-end h5">${{ data3 }}</td>
+                <th>Total saving: </th>
+                <td class="text-end h5">{{ total_result }}</td>
             </tr>
+           
+            
         </tbody>
     </table>
     

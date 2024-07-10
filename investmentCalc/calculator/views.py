@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views import View
 from .forms import InvestmentForm
 
+## Library for generate pdf and csv file functions
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -23,11 +24,6 @@ class Index(View):
 
 	def post(self, request):
 		form = InvestmentForm(request.POST)
-		labels =[]
-		data1 =[]
-		data2 =[]
-		data3 = float
-		data4 = float
 
 		if form.is_valid():
 			# set up default values
@@ -51,11 +47,6 @@ class Index(View):
 				yearly_results[i]['total'] = round(total_result, 2) #round the figures to 2 decimals only
 
 				# add to dataset for charts
-				labels.append(i)
-				data1.append(total_interest)
-				data2.append(total_result)		
-				data4 = float(form.cleaned_data['starting_amount']) + float(form.cleaned_data['annual_additional_contribution'])
-				data3 = float(total_result)- data4
 				data = {
                 'total_result': round(total_result, 2),
                 'interest': yearly_results,
@@ -69,7 +60,7 @@ class Index(View):
 				json_data = json.dumps(data)	
 
 				# Save JSON to a file
-				with open('data.json', 'w') as json_file:
+				with open('calculator/data.json', 'w') as json_file:
 					json_file.write(json_data)
 
 				# create context
@@ -81,11 +72,8 @@ class Index(View):
 					'original_investment': float(form.cleaned_data['starting_amount']),
 					'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
 					'form':form,
-					'labels':json.dumps(labels),
-					'data1':json.dumps(data1),
-					'data2':json.dumps(data2),
-					'data3':json.dumps(round(data3,2)),
-					'data4':json.dumps(data4)
+					'total_interest':round(total_result, 2) - float(form.cleaned_data['starting_amount']) - float(form.cleaned_data['annual_additional_contribution']),
+                    'total_deposit': float(form.cleaned_data['starting_amount']) + float(form.cleaned_data['annual_additional_contribution'])
 
 				}
 
