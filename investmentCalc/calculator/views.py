@@ -1,6 +1,7 @@
 import json
 import csv
 import os
+from django.conf import settings
 from django.shortcuts import render
 from django.views import View
 from .forms import InvestmentForm
@@ -31,7 +32,7 @@ class Index(View):
 			total_interest = 0
 			yearly_results = {} #range	
 
-			for i in range(1, int(form.cleaned_data['number_of_years'] + 1)):
+			for i in range(0, int(form.cleaned_data['number_of_years'] + 1)):
 				yearly_results[i] = {}
 
 				# calculate the interest
@@ -46,21 +47,19 @@ class Index(View):
 				yearly_results[i]['interest'] = round(total_interest, 2) #round the figures to 2 decimals only
 				yearly_results[i]['total'] = round(total_result, 2) #round the figures to 2 decimals only
 
-				# add to dataset for charts
+				# set data for jason file
 				data = {
-                'total_result': round(total_result, 2),
-                'interest': yearly_results,
-                'year': int(form.cleaned_data['number_of_years']),
-                'rate_of_return': float(form.cleaned_data['return_rate']),
-                'original_investment': float(form.cleaned_data['starting_amount']),
-                'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
-            }
+
+                    # output 
+                    'total_result': round(total_result, 2),
+                    'interest': yearly_results, # outcomes from loop function
+                }
 
 				# Convert data to JSON
 				json_data = json.dumps(data)	
 
 				# Save JSON to a file
-				with open('calculator/data.json', 'w') as json_file:
+				with open('static/data.json', 'w') as json_file:
 					json_file.write(json_data)
 
 				# create context
@@ -118,7 +117,7 @@ class NumberedPageCanvas(canvas.Canvas):
         
 def generate_pdf(request):
     # Read JSON data from a file
-    json_file_path = os.path.join(os.path.dirname(__file__), 'data.json')
+    json_file_path = os.path.join(settings.BASE_DIR, 'static', 'data.json')
     with open(json_file_path, 'r') as json_file:
         data = json.load(json_file)
 
@@ -224,7 +223,7 @@ def create_bar_chart(data):
 
 def generate_csv(request):
     # Read JSON data from a file
-    json_file_path = os.path.join(os.path.dirname(__file__), 'data.json')
+    json_file_path = os.path.join(settings.BASE_DIR, 'static', 'data.json')
     with open(json_file_path, 'r') as json_file:
         data = json.load(json_file)
 

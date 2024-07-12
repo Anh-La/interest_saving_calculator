@@ -30,17 +30,24 @@
 		<div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
 			<div class="accordion-body">{% include 'calculator/parts/assumption.html' %}</div>
 		</div>
+
 		</div>    
 	</div>
 	<br>
 	<div class="row">
-		<div class="col-6">
-			{% include 'calculator/parts/calculator.html' %}
+		<div class="col-3">
+			{% include 'calculator/parts/calculator.html' %}	
 		</div>
-		<div class="col-6">			
-			{% include 'calculator/parts/summary.html' %}				
-			<br>
-			{% include 'calculator/parts/chart.html' %}
+
+		<div class="col-9">
+			<div class="row ">
+				<div class="col-6">
+					{% include 'calculator/parts/summary.html' %}
+				</div>
+				<div class="col-6">
+					{% include 'calculator/parts/chart.html' %}
+				</div>
+			</div>										
 			<br>
 			{% include 'calculator/parts/schedule.html' %}
 		</div>
