@@ -1,7 +1,4 @@
 from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, MultiField
-from crispy_forms.bootstrap import InlineField, FormActions, PrependedAppendedText
 
 class InvestmentForm(forms.Form):
 
@@ -60,30 +57,3 @@ class InvestmentForm(forms.Form):
             'id': 'annual_additional_contribution_range'
         })
     )
-
-    def __init__(self, *args, **kwargs):
-        super(InvestmentForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.layout = Layout(
-            MultiField(
-                PrependedAppendedText('starting_amount','$', '.00'),
-                'starting_amount_range',
-                Div(
-                    Div('number_of_years', css_class='col-3'),
-                    Div('number_of_years_range', css_class='col-2'),
-                ),
-                Div(
-                    Div('return_rate', css_class='col-12'),
-                ),
-                Div(
-                    Div('annual_additional_contribution', css_class='col-6'),
-                    Div('annual_additional_contribution_range', css_class='col-6'),
-                ),
-                FormActions(
-                    Div(
-                    )
-                )
-            )
-            
-        )

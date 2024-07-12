@@ -18,6 +18,9 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from datetime import datetime
 
+## library for convert markdown to html
+import markdown
+
 class Index(View):
 	def get(self, request):
 		form = InvestmentForm()
@@ -49,7 +52,13 @@ class Index(View):
 
 				# set data for jason file
 				data = {
-
+                    # input
+					'number_of_years': int(form.cleaned_data['number_of_years']),
+					'rate_of_return': float(form.cleaned_data['return_rate']),
+					'original_investment': float(form.cleaned_data['starting_amount']),
+					'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
+                    'total_interest':round(total_result, 2) - float(form.cleaned_data['starting_amount']) - float(form.cleaned_data['annual_additional_contribution']),
+                    'total_deposit': float(form.cleaned_data['starting_amount']) + float(form.cleaned_data['annual_additional_contribution']),
                     # output 
                     'total_result': round(total_result, 2),
                     'interest': yearly_results, # outcomes from loop function
@@ -154,7 +163,7 @@ def generate_pdf(request):
     story.append(Spacer(1, 12))
 
     # Add general information
-    story.append(Paragraph(f"Year: {data['year']}", normal_style))
+    story.append(Paragraph(f"Year: {data['number_of_years']}", normal_style))
     story.append(Paragraph(f"Rate of Return: {data['rate_of_return']}%", normal_style))
     story.append(Paragraph(f"Original Investment: ${data['original_investment']:,.2f}", normal_style))
     story.append(Paragraph(f"Additional Investment: ${data['additional_investment']:,.2f}", normal_style))
@@ -167,7 +176,7 @@ def generate_pdf(request):
 
     # Add interest details as a table
     story.append(Paragraph("Interest Details", subtitle_style))
-    table_data = [['Year', 'Interest', 'Total']]
+    table_data = [['number_of_years', 'Interest', 'Total']]
     for year, details in data['interest'].items():
         table_data.append([year, f"${details['interest']:,.2f}", f"${details['total']:,.2f}"])
 
@@ -207,8 +216,8 @@ def create_bar_chart(data):
     bc.width = 300
 
     # Add data to the bar chart
-    bc.data = [list(data['interest'][str(year)]['interest'] for year in range(1, data['year'] + 1))]
-    bc.categoryAxis.categoryNames = [str(year) for year in range(1, data['year'] + 1)]
+    bc.data = [list(data['interest'][str(year)]['interest'] for year in range(1, data['number_of_years'] + 1))]
+    bc.categoryAxis.categoryNames = [str(year) for year in range(1, data['number_of_years'] + 1)]
 
     # Set the value axis properties
     bc.valueAxis.valueMin = 0
@@ -244,3 +253,23 @@ def generate_csv(request):
         writer.writerow([year, values["interest"], values["total"]])
 
     return response
+
+
+def read_markdown_file(filepath):
+    with open(filepath, 'r') as file:
+        return file.read()
+
+def convert_markdown_to_html(markdown_content):
+    return markdown.markdown(markdown_content)
+
+def display_readme(request):
+    # Get the absolute path to the README.md file
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    readme_path = os.path.join(project_root, 'README.md')
+
+    print(f"Project Root: {project_root}")
+    print(f"README Path: {readme_path}")
+    
+    markdown_content = read_markdown_file(readme_path)
+    html_content = convert_markdown_to_html(markdown_content)
+    return render(request, 'calculator/parts/general_info.html', {'html_content': html_content})

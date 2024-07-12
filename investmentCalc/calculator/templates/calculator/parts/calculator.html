@@ -3,7 +3,48 @@
 
     <form id="dataForm" method="POST">
         {% csrf_token %}
-        {{ form|crispy }}
+        
+        
+        <div class="form-group">
+            <div class="row">
+                <!-- Initial Deposit -->
+                <div class="col-6">
+                    <label for="starting_amount">Deposit:</label>
+                    <!-- 1a-Deposit field -->
+                    <input type="number" id="starting_amount" name="starting_amount" class="form-control">
+                    <!-- 1b-Deposit Range -->
+                    <input type="range" id="starting_amount_range" name="starting_amount_range" min="0" max="1000000" class="form-range">
+                </div>
+                <!-- Number of year -->
+                <div class="col-6">
+                    <label for="number_of_years">Number of Years</label>
+                    <!-- 2a-Year field -->
+                    <input type="number" id="number_of_years" name="number_of_years" class="form-control">
+                    <!-- 2b-Year Range -->
+                    <input type="range" id="number_of_years_range" name="number_of_years_range" min="0" max="1000" class="form-range">      
+                </div>
+            </div>
+        </div>
+    
+        <div class="form-group">
+            <div class="row">
+                <!-- 3-Expected return rate field -->
+                <div class="col-6">
+                    <label for="return_rate">Expected Return Rate (%)</label>
+                    <input type="number" id="return_rate" name="return_rate" class="form-control">
+                </div>
+                <!-- Additional deposit -->
+                <div class="col-6">
+                    <label for="annual_additional_contribution">Additional Contribution</label>
+                    <!-- 4a-Additional deposit field -->
+                    <input type="number" id="annual_additional_contribution" name="annual_additional_contribution" class="form-control">
+                    <!-- 4b-Additional deposit range -->
+                    <input type="range" id="annual_additional_contribution_range" name="annual_additional_contribution_range" min="0" max="100000" class="form-range">
+                </div>
+            </div>
+            
+        </div>
+
         <button class="btn btn-primary" onclick="convertToJson()" type="submit">Calculate</button>
     </form>
 
