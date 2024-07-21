@@ -1,4 +1,3 @@
-
 // Customise form
 document.addEventListener('DOMContentLoaded', function() {
         
@@ -43,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
     additionalRangeInput.addEventListener('input', function() {
         additionalAmountInput.value = additionalRangeInput.value;
     });
-    
     
 });
 

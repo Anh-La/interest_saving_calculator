@@ -13,31 +13,21 @@
                 <th>Balance</th>
             </tr>
         </thead>
-        <tbody>
-            {% for key, value in yearly_results.items %}
-            <tr>
-                <th class="text-end" scope="row">{{ key }}</th>
-                <td class="text-end">{{ original_investment }}</td>
-                <td class="text-end">{{ rate_of_return }}</td>
-                <td class="text-end">{{ interest_on_deposit }}</td>
-                <td class="text-end">{{ additional_investment }}</td>
-                <td class="text-end">{{ value.deposit }}</td>
-                <td class="text-end">{{ value.compound_interest }}</td>
-                <td class="text-end">{{ value.total }}</td>
-            </tr>
-            {% endfor %}
+        <tbody id="yearlyResults">
+            <!-- Yearly results will be populated here by JavaScript -->
         </tbody>
         <tfoot>
             <tr>
                 <th scope="row" class="table-success"></th>
-                <td class="text-end table-success">{{ original_investment }}</td>
-                <td class="text-end table-success">{{ rate_of_return }}</td>
-                <td class="text-end table-success">{{ total_interest_on_deposit }}</td>
-                <td class="text-end table-success">{{ total_additional_deposit }}</td>
-                <td class="text-end table-success">{{ total_deposit }}</td>
-                <td class="text-end table-success">{{ total_deposit }}</td>
-                <td class="text-end table-success">{{ total_result }}</td>
+                <td class="text-end table-success"><span id="totalInitialDeposit"></span> </td>
+                <td class="text-end table-success" id="totalRate"></td>
+                <td class="text-end table-success" id="totalInterestOnDeposit"></td>
+                <td class="text-end table-success" id="totalAdditionalDeposit"></td>
+                <td class="text-end table-success" id="totalDeposit"></td>
+                <td class="text-end table-success" id="totalCompoundInterest"></td>
+                <td class="text-end table-success" id="totalResult"></td>
             </tr>
         </tfoot>
     </table>
 </div>
+
