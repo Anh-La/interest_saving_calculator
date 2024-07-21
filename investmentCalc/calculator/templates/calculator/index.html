@@ -11,44 +11,52 @@
 		<div class="text-center accordion-item">
 		<h2 class="accordion-header">
 			<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-			<p>General Information</p>
+				<p>General Information</p>
 			</button>
 		</h2>
 		<div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-			<div class="accordion-body">{% include 'calculator/parts/general_info.html' %}</div>
+			<div class="accordion-body">{{ html_content|safe }}</div>
 		</div>
 		</div>
-		<!-- Section 2: assumptions>
+		<!-- Section 2: assumptions >
 		<div class="accordion-item">
 		<h2 class="accordion-header">
 			<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-			<p>Assumptions</p>
+				<p>Assumptions</p>
 			</button>
 		</h2>
 		<div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
 			<div class="accordion-body"> ...</div>
 		</div>
-
 		</div-->    
 	</div>
 	<br>
 	<div class="row">
-		<div class="col-3">
-			{% include 'calculator/parts/calculator.html' %}	
+		<div class="col-12 col-md-3">
+			<div class="p-3 border bg-light">
+				{% include 'calculator/parts/calculator.html' %}
+			</div>
 		</div>
 
-		<div class="col-9">
-			<div class="row ">
-				<div class="col-6">
-					{% include 'calculator/parts/summary.html' %}
+		<div class="col-12 col-md-9">
+			<div class="row">
+				<div class="col-12 col-lg-6">
+					<div class="p-3 border bg-light table-responsive">
+						{% include 'calculator/parts/summary.html' %}
+					</div>
 				</div>
-				<div class="col-6">
-					{% include 'calculator/parts/chart.html' %}
+				<div class="col-12 col-lg-6">
+					<div id="results" class="p-3 border bg-light fixed-height">
+						{% include 'calculator/parts/charts.html' %}
+					</div>
 				</div>
 			</div>										
 			<br>
-			{% include 'calculator/parts/schedule.html' %}
+			<div class="container p-3 border bg-light">
+				{% include 'calculator/parts/schedule.html' %}
+			</div>
 		</div>
-  </div>
+	</div>
+</div>
 	
 {% endblock content %}

@@ -1,0 +1,162 @@
+<!--Dropdown button for chart type-->
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+	<select onchange="changeChart(this)">
+		<optgroup label="select chart"></optgroup>
+		<option value="bar">Bar</option>
+		<option value="pie">Pie</option>
+		<option value="doughnut">Doughnut</option>
+		<option value="line">Line</option>
+		<option value="radar">Radar</option>
+		</optgroup>
+	</select>
+</div>
+
+<!--Canvas for chart-->
+<canvas id="myChart"></canvas>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script>
+    // declare variances
+    const starting_amount = document.getElementById('starting_amount');
+    const number_of_years = document.getElementById('number_of_years');
+    const return_rate = document.getElementById('return_rate');
+    const annual_additional_contribution = document.getElementById('annual_additional_contribution');
+    
+    // setup 
+    const data = {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+        label: 'Interest',
+        data: [starting_amount.value,annual_additional_contribution.value],
+        backgroundColor: [
+            'rgba(255, 26, 104, 0.2)',
+            'rgba(54, 162, 235, 0.2)'
+        ],
+        borderColor: [
+            'rgba(255, 26, 104, 1)',
+            'rgba(54, 162, 235, 1)'
+        ],
+        borderWidth: 1
+        }]
+    };
+
+    // config - bar chart
+    const config = {
+        type: 'bar',
+        data,
+        options: {
+        scales: {
+        }
+        }
+    };
+    // config - line chart
+    const configLine = {
+        type: 'line',
+        data,
+        options: {
+        scales: {
+        }
+        }
+    };
+    // config - pie chart
+    const configPie = {
+        type: 'pie',
+        data,
+        options: {
+        scales: {
+        }
+        }
+    };
+    // config - doughnut chart
+    const configDoughnut = {
+        type: 'doughnut',
+        data,
+        options: {
+        scales: {
+        }
+        }
+    };
+    // config - radar chart
+    const configRadar = {
+        type: 'radar',
+        data,
+        options: {
+        scales: {
+        }
+        }
+    };
+    // render init block
+    let myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+    );
+
+	// update data in chart
+    function updateChart(){
+        myChart.config.data.datasets[0].data =[starting_amount.value,annual_additional_contribution.value];
+        myChart.update();
+		calculation();
+    };
+
+	// Calculate result and return in the summary
+	function calculator() {
+        const number_of_years = parseFloat(document.getElementById('number_of_years').value);
+        const starting_amount = parseFloat(document.getElementById('starting_amount').value);
+        const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
+        const return_rate = parseFloat(document.getElementById('return_rate').value);
+
+        const total_additional_deposit = number_of_years * annual_additional_contribution;
+        const total_interest = ((starting_amount * (1 + return_rate / 100) ** number_of_years) - starting_amount) + 
+                                (total_additional_deposit * ((1 + return_rate / 100) ** number_of_years - 1) / (return_rate / 100));
+        const total_result = starting_amount + total_additional_deposit + total_interest;
+
+        document.getElementById('displayYears').innerText = number_of_years;
+        document.getElementById('displayInitialDeposit').innerText = starting_amount.toFixed(2);
+        document.getElementById('displayAdditionalSaving').innerText = total_additional_deposit.toFixed(2);
+        document.getElementById('displayInterest').innerText = total_interest.toFixed(2);
+        document.getElementById('displayTotalSaving').innerText = total_result.toFixed(2);
+    };
+    
+    // change chart type
+    function changeChart(chartType){
+        myChart.destroy(); //destroy current chart to build the new chart
+
+        //build new bar chart
+        if (chartType.value ==='bar'){
+            myChart = new Chart(
+                document.getElementById('myChart'),
+                config
+            );
+        }
+            
+        //build new pie chart
+        if (chartType.value ==='pie'){
+            myChart = new Chart(
+                document.getElementById('myChart'),
+                configPie
+            );
+        }
+        //build new line chart
+        if (chartType.value ==='line'){
+            myChart = new Chart(
+                document.getElementById('myChart'),
+                configLine
+            );
+        }
+        //build new doughnut chart
+        if (chartType.value ==='doughnut'){
+            myChart = new Chart(
+                document.getElementById('myChart'),
+                configDoughnut
+            );
+        }
+        //build new radar chart
+        if (chartType.value ==='radar'){
+            myChart = new Chart(
+                document.getElementById('myChart'),
+                configRadar
+            );
+        }
+
+    }
+
+</script>

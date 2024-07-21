@@ -21,114 +21,137 @@ from datetime import datetime
 ## library for convert markdown to html
 import markdown
 
+def read_markdown_file(filepath):
+    with open(filepath, 'r') as file:
+        return file.read()
+
+def convert_markdown_to_html(markdown_content):
+    return markdown.markdown(markdown_content)
+
 class Index(View):
-	def get(self, request):
-		form = InvestmentForm()
-		return render(request, 'calculator/index.html', {'form': form})
+    def get(self, request):
+        form = InvestmentForm()
+        
+        # Get the absolute path to the README.md file
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        readme_path = os.path.join(project_root, 'README.md')
+        markdown_content = read_markdown_file(readme_path)
+        html_content = convert_markdown_to_html(markdown_content)
 
-	def post(self, request):
-		form = InvestmentForm(request.POST)
+        context = {
+            'form': form,
+            'html_content': html_content
+        }
 
-		if form.is_valid():
-			# set up default values
-			total_result = form.cleaned_data['starting_amount']
-			total_interest = 0
-			yearly_results = {} #range	
+        return render(request, 'calculator/index.html', context)
 
-			for i in range(0, int(form.cleaned_data['number_of_years'] + 1)):
-				yearly_results[i] = {}
+    def post(self, request):
+        form = InvestmentForm(request.POST)
 
-				# calculate the interest
-				interest = total_result * (form.cleaned_data['return_rate'] / 100) # multiple the original investment with the required rate of return in percentage
-				total_result += interest # add the newly calculated interest amount to the accumulated investment
-				total_interest += interest # add the newly calculated interest amount to the accumulated interest
+        # Get the absolute path to the README.md file
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        readme_path = os.path.join(project_root, 'README.md')
+        markdown_content = read_markdown_file(readme_path)
+        html_content = convert_markdown_to_html(markdown_content)
 
-				# add additional contribution
-				total_result += form.cleaned_data['annual_additional_contribution']
+        if form.is_valid():
+            # Set up default values
+            number_of_years =form.cleaned_data['number_of_years']
+            initial_deposit = form.cleaned_data['starting_amount']
+            intereset_rate = form.cleaned_data['return_rate'] / 100
+            total_deposit = initial_deposit
+            total_result = total_deposit
+            total_interest = 0
+            total_additional_contribution = form.cleaned_data['annual_additional_contribution']
+            yearly_results = {}  # range    
 
-				# set yearly_results
-				yearly_results[i]['interest'] = round(total_interest, 2) #round the figures to 2 decimals only
-				yearly_results[i]['total'] = round(total_result, 2) #round the figures to 2 decimals only
+            for i in range(1, int(number_of_years + 1)):
+                yearly_results[i] = {}
 
-				# set data for jason file
-				data = {
-                    # input
-					'number_of_years': int(form.cleaned_data['number_of_years']),
-					'rate_of_return': float(form.cleaned_data['return_rate']),
-					'original_investment': float(form.cleaned_data['starting_amount']),
-					'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
-                    'total_interest':round(total_result, 2) - float(form.cleaned_data['starting_amount']) - float(form.cleaned_data['annual_additional_contribution']),
-                    'total_deposit': float(form.cleaned_data['starting_amount']) + float(form.cleaned_data['annual_additional_contribution']),
-                    # output 
+                # Calculate the interest
+                interest_on_deposit = total_deposit * intereset_rate
+                interest = total_result * intereset_rate  # Multiply the original investment with the required rate of return in percentage
+                total_result += interest  # Add the newly calculated interest amount to the accumulated investment
+                total_interest += interest  # Add the newly calculated interest amount to the accumulated interest
+
+                # Add additional contribution
+                total_deposit += total_additional_contribution
+                total_result += total_additional_contribution
+
+                # Set yearly_results
+                yearly_results[i]['deposit'] = round(total_deposit+interest_on_deposit, 2)  # Round the figures to 2 decimals only
+                yearly_results[i]['principle_interest'] = round(interest_on_deposit, 2)  # Round the figures to 2 decimals only
+                yearly_results[i]['compound_interest'] = round(total_interest-interest_on_deposit, 2)  # Round the figures to 2 decimals only
+                yearly_results[i]['interest'] = round(total_interest, 2)  # Round the figures to 2 decimals only
+                yearly_results[i]['total'] = round(total_result, 2)  # Round the figures to 2 decimals only
+
+                # Set data for JSON file
+                data = {
+                    # Input
+                    'number_of_years': int(form.cleaned_data['number_of_years']),
+                    'rate_of_return': float(form.cleaned_data['return_rate']),
+                    'original_investment': float(form.cleaned_data['starting_amount']),
+                    'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
+                    'total_interest': round(total_result-total_deposit, 2),
+                    'total_deposit': float(form.cleaned_data['starting_amount']) + (float(form.cleaned_data['annual_additional_contribution'])*int(form.cleaned_data['number_of_years'])),
+                    # Output 
                     'total_result': round(total_result, 2),
-                    'interest': yearly_results, # outcomes from loop function
+                    'interest': yearly_results,  # Outcomes from loop function
                 }
 
-				# Convert data to JSON
-				json_data = json.dumps(data)	
+                # Convert data to JSON
+                json_data = json.dumps(data)    
 
-				# Save JSON to a file
-				with open('static/data.json', 'w') as json_file:
-					json_file.write(json_data)
+                # Save JSON to a file
+                with open('static/data.json', 'w') as json_file:
+                    json_file.write(json_data)
 
-				# create context
-				context = {
-					'total_result': round(total_result, 2), 
-					'yearly_results': yearly_results,
-					'number_of_years': int(form.cleaned_data['number_of_years']),
-					'rate_of_return': float(form.cleaned_data['return_rate']),
-					'original_investment': float(form.cleaned_data['starting_amount']),
-					'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
-					'form':form,
-					'total_interest':round(total_result, 2) - float(form.cleaned_data['starting_amount']) - float(form.cleaned_data['annual_additional_contribution']),
-                    'total_deposit': float(form.cleaned_data['starting_amount']) + float(form.cleaned_data['annual_additional_contribution'])
+                # Create context
+                context = {
+                    # README content
+                    'html_content': html_content,
+                    # input
+                    'total_deposit': round(total_deposit+(interest_on_deposit*number_of_years),2),
+                    'total_result': round(total_result, 2), 
+                    'yearly_results': yearly_results,
+                    'number_of_years': int(form.cleaned_data['number_of_years']),
+                    'rate_of_return': float(form.cleaned_data['return_rate']),
+                    'original_investment': float(form.cleaned_data['starting_amount']),
+                    'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
+                    'total_additional_deposit':float(form.cleaned_data['annual_additional_contribution'])*int(form.cleaned_data['number_of_years']),
+                    'form': form,
+                    'total_interest': round(total_result-total_deposit, 2),
+                    'interest_on_deposit':round(interest_on_deposit,2),
+                    'total_interest_on_deposit':round(interest_on_deposit*number_of_years,2)
+                }
 
-				}
+            # Render the template
+            return render(request, 'calculator/index.html', context)
+        else:
+             # Get the absolute path to the README.md file
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            readme_path = os.path.join(project_root, 'README.md')
+            markdown_content = read_markdown_file(readme_path)
+            html_content = convert_markdown_to_html(markdown_content)
 
-			# render the template
-			return render(request, 'calculator/index.html', context)
+            context = {
+                'form': form,
+                'html_content': html_content
+            }
 
-class NumberedPageCanvas(canvas.Canvas):
-    """
-    Custom canvas to add page numbers to PDF.
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.pages = []
-
-    def showPage(self):
-        """
-        On a page break, add information to the list.
-        """
-        self.pages.append(dict(self.__dict__))
-        self._startPage()
-
-    def save(self):
-        """
-        Add the page number to each page (page x of y).
-        """
-        page_count = len(self.pages)
-
-        for page in self.pages:
-            self.__dict__.update(page)
-            self.draw_page_number(page_count)
-            super().showPage()
-
-        super().save()
-
-    def draw_page_number(self, page_count):
-        """
-        Add the page number.
-        """
-        page = "Page %s of %s" % (self._pageNumber, page_count)
-        self.setFont("Helvetica", 9)
-        self.drawRightString(179 * mm, -280 * mm, page)
+            return render(request, 'calculator/index.html', context)
         
 def generate_pdf(request):
     # Read JSON data from a file
     json_file_path = os.path.join(settings.BASE_DIR, 'static', 'data.json')
     with open(json_file_path, 'r') as json_file:
         data = json.load(json_file)
+
+    # Get the README content
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    readme_path = os.path.join(project_root, 'README.md')
+    markdown_content = read_markdown_file(readme_path)
+    html_content = convert_markdown_to_html(markdown_content)
 
     # Create a HttpResponse object and set the appropriate PDF headers
     response = HttpResponse(content_type='application/pdf')
@@ -162,7 +185,7 @@ def generate_pdf(request):
     story.append(Paragraph("Saving Report", title_style))
     story.append(Spacer(1, 12))
 
-    # Add general information
+    # Add Summary input
     story.append(Paragraph(f"Year: {data['number_of_years']}", normal_style))
     story.append(Paragraph(f"Rate of Return: {data['rate_of_return']}%", normal_style))
     story.append(Paragraph(f"Original Investment: ${data['original_investment']:,.2f}", normal_style))
@@ -201,9 +224,13 @@ def generate_pdf(request):
     ]))
 
     story.append(table)
+
+    # Add general information
+    story.append(Paragraph(f"General information: {html_content}", normal_style))
+    story.append(Spacer(1, 12))
 	
     # Build the PDF document with the defined story using the custom canvas
-    doc.build(story, canvasmaker=NumberedPageCanvas)
+    doc.build(story)
 
     return response
 
@@ -253,23 +280,3 @@ def generate_csv(request):
         writer.writerow([year, values["interest"], values["total"]])
 
     return response
-
-
-def read_markdown_file(filepath):
-    with open(filepath, 'r') as file:
-        return file.read()
-
-def convert_markdown_to_html(markdown_content):
-    return markdown.markdown(markdown_content)
-
-def display_readme(request):
-    # Get the absolute path to the README.md file
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    readme_path = os.path.join(project_root, 'README.md')
-
-    print(f"Project Root: {project_root}")
-    print(f"README Path: {readme_path}")
-    
-    markdown_content = read_markdown_file(readme_path)
-    html_content = convert_markdown_to_html(markdown_content)
-    return render(request, 'calculator/parts/general_info.html', {'html_content': html_content})

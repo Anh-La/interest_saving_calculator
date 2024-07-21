@@ -1,32 +1,43 @@
-<div class="container p-3 border bg-light">    
-    <div class="table-responsive-sm">
-        <table class="table table-sm table-striped header-fixed caption-top">
-            <thead>
-                <tr>
-                    <th>Year</th>
-                    <th>Additional saving</th>
-                    <th>Accumulated Interest</th>
-                    <th>Total Saving</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for key, value in yearly_results.items %}
-                <tr>
-                    <th class="text-end" scope="row">{{ key }}</th>
-                    <td class="text-end">{{ additional_investment }}</td>
-                    <td class="text-end">{{ value.interest }}</td>
-                    <td class="text-end">{{ value.total }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th scope="row" class="table-success">Total</th>
-                    <td class="text-end table-success">{{ total_deposit }}</td>
-                    <td class="text-end table-success">{{ total_interest }}</td>
-                    <td class="text-end table-success">{{ total_result }}</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+
+<div class="table-responsive-sm">
+    <table class="table table-sm table-striped header-fixed caption-top">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Initial Deposit</th>
+                <th>Rate %</th>
+                <th>Interest on deposit</th>
+                <th>Additional saving</th>
+                <th>Total deposit</th>
+                <th>Compound interest</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in yearly_results.items %}
+            <tr>
+                <th class="text-end" scope="row">{{ key }}</th>
+                <td class="text-end">{{ original_investment }}</td>
+                <td class="text-end">{{ rate_of_return }}</td>
+                <td class="text-end">{{ interest_on_deposit }}</td>
+                <td class="text-end">{{ additional_investment }}</td>
+                <td class="text-end">{{ value.deposit }}</td>
+                <td class="text-end">{{ value.compound_interest }}</td>
+                <td class="text-end">{{ value.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="row" class="table-success"></th>
+                <td class="text-end table-success">{{ original_investment }}</td>
+                <td class="text-end table-success">{{ rate_of_return }}</td>
+                <td class="text-end table-success">{{ total_interest_on_deposit }}</td>
+                <td class="text-end table-success">{{ total_additional_deposit }}</td>
+                <td class="text-end table-success">{{ total_deposit }}</td>
+                <td class="text-end table-success">{{ total_deposit }}</td>
+                <td class="text-end table-success">{{ total_result }}</td>
+            </tr>
+        </tfoot>
+    </table>
 </div>

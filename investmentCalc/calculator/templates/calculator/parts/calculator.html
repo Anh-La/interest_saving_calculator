@@ -1,57 +1,53 @@
 {% load crispy_forms_tags %}
-<div class="p-3 border bg-light">
-
-    <form id="dataForm" method="POST">
-        {% csrf_token %}
-        
-        
-        <div class="form-group">
-            <div class="row">
-                <!-- Initial Deposit -->
-                <div class="col-6">
-                    <label for="starting_amount">Deposit:</label>
-                    <!-- 1a-Deposit field -->
-                    <input type="number" id="starting_amount" name="starting_amount" class="form-control">
-                    <!-- 1b-Deposit Range -->
-                    <input type="range" id="starting_amount_range" name="starting_amount_range" min="0" max="1000000" class="form-range">
-                </div>
-                <!-- Number of year -->
-                <div class="col-6">
-                    <label for="number_of_years">Number of Years</label>
-                    <!-- 2a-Year field -->
-                    <input type="number" id="number_of_years" name="number_of_years" class="form-control">
-                    <!-- 2b-Year Range -->
-                    <input type="range" id="number_of_years_range" name="number_of_years_range" min="0" max="1000" class="form-range">      
-                </div>
+<form id="dataForm" method="POST">    
+    {% csrf_token %}        
+    <div class="form-group">
+        <div class="row">
+            <!-- Initial Deposit -->
+            <div class="col-6">
+                <label for="starting_amount">Deposit:</label>
+                <!-- 1a-Deposit field -->
+                <input onchange="updateChart()" type="number" id="starting_amount" name="starting_amount" class="form-control">
+                <!-- 1b-Deposit Range -->
+                <input onchange="updateChart()" type="range" id="starting_amount_range" name="starting_amount_range" min="0" max="1000000" class="form-range">
+            </div>
+            <!-- Number of year -->
+            <div class="col-6">
+                <label for="number_of_years">Number of Years</label>
+                <!-- 2a-Year field -->
+                <input  onchange="updateChart()" type="number" id="number_of_years" name="number_of_years" class="form-control">
+                <!-- 2b-Year Range -->
+                <input onchange="updateChart()" type="range" id="number_of_years_range" name="number_of_years_range" min="0" max="1000" class="form-range">      
             </div>
         </div>
-    
-        <div class="form-group">
-            <div class="row">
-                <!-- 3-Expected return rate field -->
-                <div class="col-6">
-                    <label for="return_rate">Expected Return Rate (%)</label>
-                    <input type="number" id="return_rate" name="return_rate" class="form-control">
-                </div>
-                <!-- Additional deposit -->
-                <div class="col-6">
-                    <label for="annual_additional_contribution">Additional Contribution</label>
-                    <!-- 4a-Additional deposit field -->
-                    <input type="number" id="annual_additional_contribution" name="annual_additional_contribution" class="form-control">
-                    <!-- 4b-Additional deposit range -->
-                    <input type="range" id="annual_additional_contribution_range" name="annual_additional_contribution_range" min="0" max="100000" class="form-range">
-                </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <!-- 3-Expected return rate field -->
+            <div class="col-6">
+                <label for="return_rate">Expected Return Rate (%)</label>
+                <!-- 3a-rate range -->
+                <input onchange="updateChart()" type="number" id="return_rate" name="return_rate" class="form-control">
+                <!-- 3b-rate range -->
+                <input onchange="updateChart()" type="range" id="return_rate_range" name="return_rate" min="0" max="100" class="form-range">
             </div>
-            
+            <!-- Additional deposit -->
+            <div class="col-6">
+                <label for="annual_additional_contribution">Additional Contribution</label>
+                <!-- 4a-Additional deposit field -->
+                <input onchange="updateChart()" type="number" id="annual_additional_contribution" name="annual_additional_contribution" class="form-control">
+                <!-- 4b-Additional deposit range -->
+                <input onchange="updateChart()" type="range" id="annual_additional_contribution_range" name="annual_additional_contribution_range" min="0" max="100000" class="form-range">
+            </div>
         </div>
+    </div>
+</form>
 
-        <button class="btn btn-primary" onclick="convertToJson()" type="submit">Calculate</button>
-    </form>
+<!--Auto fetch data from the form-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!--Auto fetch data from the form-->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
+<script>
     $(document).ready(function() {
         // Function to update results on form change
         $('#dataForm input').on('input', function() {
@@ -86,6 +82,4 @@
             return jsonData;
         }
     });
-    </script>
-
-</div>
+</script>

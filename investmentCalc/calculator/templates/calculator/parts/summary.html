@@ -1,41 +1,38 @@
-<div class="p-3 border bg-light table-responsive">
-    <div class="row">
-        <div class="col h5">YOUR SAVING SUMMARY</div>
-        <div class="col-3 text-end">
-            <a href="{% url 'generate_pdf' %}" download>
-                <i class="bi bi-filetype-pdf" style="font-size: 2rem; color: cornflowerblue;"></i>
-            </a>
-            <a href="{% url 'generate_csv' %}" download>
-                <i class="bi bi-filetype-csv" style="font-size: 2rem; color: cornflowerblue;"></i>
-            </a>
-        </div>
+
+<div class="row">
+    <div class="col h5">YOUR SAVING SUMMARY</div>
+    <div class="col-3 text-end">
+        <a onclick="convertToJson()" href="{% url 'generate_pdf' %}" download>
+            <i class="bi bi-filetype-pdf" style="font-size: 2rem; color: cornflowerblue;"></i>
+        </a>
+        <a href="{% url 'generate_csv' %}" download>
+            <i class="bi bi-filetype-csv" style="font-size: 2rem; color: cornflowerblue;"></i>
+        </a>
     </div>
-    
-    <table class="table table-primary">
-        <tbody>
-            <tr>
-                <th>Year of saving:</th>
-                <td class="text-end h5">{{ number_of_years }}</td>
-            </tr>
-            <tr>
-                <th>Initial deposit: </th>
-                <td class="text-end h5">{{ original_investment }}</td>
-            </tr>
-            <tr>
-                <th>Total additional saving: </th>
-                <td class="text-end h5">{{ total_deposit }}</td>
-            </tr>
-            <tr>
-                <th>Total interest: </th>
-                <td class="text-end h5">{{ total_interest }}</td>
-            </tr>
-            <tr>
-                <th>Total saving: </th>
-                <td class="text-end h5">{{ total_result }}</td>
-            </tr>
-           
-            
-        </tbody>
-    </table>
-    
 </div>
+
+<table class="table table-primary">
+    <tbody>
+        <tr>
+            <th>Year of saving:</th>
+            <td class="text-end h5"><span id="displayYears"></span></td>
+        </tr>
+        <tr>
+            <th>Initial deposit:</th>
+            <td class="text-end h5"><span id="displayInitialDeposit"></span></td>
+        </tr>
+        <tr>
+            <th>Total additional saving:</th>
+            <td class="text-end h5"><span id="displayAdditionalSaving"></span></td>
+        </tr>
+        <tr>
+            <th>Total interest:</th>
+            <td class="text-end h5"><span id="displayInterest"></span></td>
+        </tr>
+        <tr>
+            <th>Total saving:</th>
+            <td class="text-end h5"><span id="displayTotalSaving"></span></td>
+        </tr>
+    </tbody>
+</table>
+
