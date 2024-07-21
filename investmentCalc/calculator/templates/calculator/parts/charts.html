@@ -23,7 +23,7 @@
     
     // setup 
     const data = {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: number_of_years,
         datasets: [{
         label: 'Interest',
         data: [starting_amount.value,annual_additional_contribution.value],
@@ -94,28 +94,26 @@
     function updateChart(){
         myChart.config.data.datasets[0].data =[starting_amount.value,annual_additional_contribution.value];
         myChart.update();
-		calculation();
+		calculator();
     };
-
-	// Calculate result and return in the summary
+    // Calculate result and return in the summary
 	function calculator() {
-        const number_of_years = parseFloat(document.getElementById('number_of_years').value);
-        const starting_amount = parseFloat(document.getElementById('starting_amount').value);
-        const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
-        const return_rate = parseFloat(document.getElementById('return_rate').value);
+		const number_of_years = parseFloat(document.getElementById('number_of_years').value);
+		const starting_amount = parseFloat(document.getElementById('starting_amount').value);
+		const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
+		const return_rate = parseFloat(document.getElementById('return_rate').value);
 
-        const total_additional_deposit = number_of_years * annual_additional_contribution;
-        const total_interest = ((starting_amount * (1 + return_rate / 100) ** number_of_years) - starting_amount) + 
-                                (total_additional_deposit * ((1 + return_rate / 100) ** number_of_years - 1) / (return_rate / 100));
-        const total_result = starting_amount + total_additional_deposit + total_interest;
+		const total_additional_deposit = number_of_years * annual_additional_contribution;
+		const total_interest = ((starting_amount * (1 + return_rate / 100) ** number_of_years) - starting_amount) + 
+								(total_additional_deposit * ((1 + return_rate / 100) ** number_of_years - 1) / (return_rate / 100));
+		const total_result = starting_amount + total_additional_deposit + total_interest;
 
-        document.getElementById('displayYears').innerText = number_of_years;
-        document.getElementById('displayInitialDeposit').innerText = starting_amount.toFixed(2);
-        document.getElementById('displayAdditionalSaving').innerText = total_additional_deposit.toFixed(2);
-        document.getElementById('displayInterest').innerText = total_interest.toFixed(2);
-        document.getElementById('displayTotalSaving').innerText = total_result.toFixed(2);
-    };
-    
+		document.getElementById('displayYears').innerText = number_of_years;
+		document.getElementById('displayInitialDeposit').innerText = starting_amount.toFixed(2);
+		document.getElementById('displayAdditionalSaving').innerText = total_additional_deposit.toFixed(2);
+		document.getElementById('displayInterest').innerText = total_interest.toFixed(2);
+		document.getElementById('displayTotalSaving').innerText = total_result.toFixed(2);
+	};
     // change chart type
     function changeChart(chartType){
         myChart.destroy(); //destroy current chart to build the new chart
