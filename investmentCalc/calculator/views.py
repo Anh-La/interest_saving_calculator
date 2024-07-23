@@ -7,7 +7,7 @@ from django.views import View
 from .forms import InvestmentForm
 
 ## Library for generate pdf and csv file functions
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.graphics.shapes import Drawing
@@ -99,6 +99,9 @@ class Index(View):
                     'interest': yearly_results,  # Outcomes from loop function
                 }
 
+                # Save data to session
+                request.session['investment_data'] = data
+
                 # Convert data to JSON
                 json_data = json.dumps(data)    
 
@@ -128,11 +131,6 @@ class Index(View):
             # Render the template
             return render(request, 'calculator/index.html', context)
         else:
-             # Get the absolute path to the README.md file
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            readme_path = os.path.join(project_root, 'README.md')
-            markdown_content = read_markdown_file(readme_path)
-            html_content = convert_markdown_to_html(markdown_content)
 
             context = {
                 'form': form,
@@ -280,3 +278,4 @@ def generate_csv(request):
         writer.writerow([year, values["interest"], values["total"]])
 
     return response
+
