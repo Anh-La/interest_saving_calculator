@@ -2,6 +2,11 @@
     height: 300px; /* Adjust the height as needed */
 }
 
+.table th, .table td {
+  padding: 8px;
+  text-align: right; /* Align numbers to the right */
+}
+
 /*Standard Style for chart*/
 
 * {

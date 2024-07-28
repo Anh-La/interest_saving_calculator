@@ -21,6 +21,10 @@ from datetime import datetime
 ## library for convert markdown to html
 import markdown
 
+##
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
 def read_markdown_file(filepath):
     with open(filepath, 'r') as file:
         return file.read()
@@ -106,7 +110,7 @@ class Index(View):
                 json_data = json.dumps(data)    
 
                 # Save JSON to a file
-                with open('static/data.json', 'w') as json_file:
+                with open('static/results.json', 'w') as json_file:
                     json_file.write(json_data)
 
                 # Create context
@@ -141,23 +145,17 @@ class Index(View):
         
 def generate_pdf(request):
     # Read JSON data from a file
-    json_file_path = os.path.join(settings.BASE_DIR, 'static', 'data.json')
+    json_file_path = os.path.join(settings.BASE_DIR, 'static', 'results.json')
     with open(json_file_path, 'r') as json_file:
         data = json.load(json_file)
-
-    # Get the README content
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    readme_path = os.path.join(project_root, 'README.md')
-    markdown_content = read_markdown_file(readme_path)
-    html_content = convert_markdown_to_html(markdown_content)
 
     # Create a HttpResponse object and set the appropriate PDF headers
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
 
     # Create the PDF object, using the response object as its "file."
-    doc = SimpleDocTemplate(response, pagesize=letter, rightMargin=72,leftMargin=72,topMargin=72,bottomMargin=18)
-    
+    doc = SimpleDocTemplate(response, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+
     # Set up styles
     styles = getSampleStyleSheet()
     
@@ -174,8 +172,8 @@ def generate_pdf(request):
 
     # Create story for the PDF
     story = []
-	
-	# date and time
+    
+    # Date and time
     date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     story.append(Paragraph(f"Generated on: {date_time}", normal_style))
 
@@ -184,22 +182,33 @@ def generate_pdf(request):
     story.append(Spacer(1, 12))
 
     # Add Summary input
-    story.append(Paragraph(f"Year: {data['number_of_years']}", normal_style))
-    story.append(Paragraph(f"Rate of Return: {data['rate_of_return']}%", normal_style))
-    story.append(Paragraph(f"Original Investment: ${data['original_investment']:,.2f}", normal_style))
-    story.append(Paragraph(f"Additional Investment: ${data['additional_investment']:,.2f}", normal_style))
-    story.append(Paragraph(f"Total Result: ${data['total_result']:,.2f}", normal_style))
+    summary = data.get('summary', {})
+    story.append(Paragraph(f"Years: {summary.get('years', 'N/A')}", normal_style))
+    story.append(Paragraph(f"Initial Deposit: ${summary.get('initialDeposit', 'N/A')}", normal_style))
+    story.append(Paragraph(f"Additional Saving: ${summary.get('additionalSaving', 'N/A')}", normal_style))
+    story.append(Paragraph(f"Total Interest: ${summary.get('interest', 'N/A')}", normal_style))
+    story.append(Paragraph(f"Total Saving: ${summary.get('totalSaving', 'N/A')}", normal_style))
     story.append(Spacer(1, 12))
 
-    # Add the bar chart
-    story.append(Paragraph("Interest Over the Years", subtitle_style))
-    story.append(create_bar_chart(data))
-
-    # Add interest details as a table
+    # Add the schedule as a table
     story.append(Paragraph("Interest Details", subtitle_style))
-    table_data = [['number_of_years', 'Interest', 'Total']]
-    for year, details in data['interest'].items():
-        table_data.append([year, f"${details['interest']:,.2f}", f"${details['total']:,.2f}"])
+    
+    # Prepare table data
+    table_data = [
+        ['Year', 'Initial Deposit', 'Rate %', 'Interest on Deposit', 'Additional Contribution', 'Total Balance', 'Compound Interest', 'Total Saving Result']
+    ]
+    
+    for entry in data.get('schedule', []):
+        table_data.append([
+            entry.get('year', 'N/A'),
+            entry.get('initialDeposit', 'N/A'),
+            entry.get('rate', 'N/A'),
+            entry.get('interestOnDeposit', 'N/A'),
+            entry.get('additionalContribution', 'N/A'),
+            entry.get('totalBalance', 'N/A'),
+            entry.get('compoundInterest', 'N/A'),
+            entry.get('totalSavingResult', 'N/A')
+        ])
 
     # Calculate the width of each column to match the width of the page
     table_width = doc.width
@@ -215,18 +224,15 @@ def generate_pdf(request):
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-		('ALIGN', (0, 1), (-1, -1), 'RIGHT'),  # Right-align the data rows
-		('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('ALIGN', (0, 1), (-1, -1), 'RIGHT'),  # Right-align the data rows
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
         ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
     ]))
 
     story.append(table)
-
-    # Add general information
-    story.append(Paragraph(f"General information: {html_content}", normal_style))
     story.append(Spacer(1, 12))
-	
+
     # Build the PDF document with the defined story using the custom canvas
     doc.build(story)
 
@@ -257,7 +263,7 @@ def create_bar_chart(data):
 
 def generate_csv(request):
     # Read JSON data from a file
-    json_file_path = os.path.join(settings.BASE_DIR, 'static', 'data.json')
+    json_file_path = os.path.join(settings.BASE_DIR, 'static', 'results.json')
     with open(json_file_path, 'r') as json_file:
         data = json.load(json_file)
 
@@ -269,13 +275,50 @@ def generate_csv(request):
 
     writer = csv.writer(response)
 
-    # Write headers
-    headers = ["Year", "Interest", "Total"]
-    writer.writerow(headers)
+    # Write headers for the summary section
+    writer.writerow(["Summary"])
+    summary = data.get('summary', {})
+    writer.writerow(["Years", summary.get('years', 'N/A')])
+    writer.writerow(["Initial Deposit", summary.get('initialDeposit', 'N/A')])
+    writer.writerow(["Additional Saving", summary.get('additionalSaving', 'N/A')])
+    writer.writerow(["Total Interest", summary.get('interest', 'N/A')])
+    writer.writerow(["Total Saving", summary.get('totalSaving', 'N/A')])
+    writer.writerow([])  # Empty row for separation
+
+    # Write headers for the schedule section
+    writer.writerow(["Year", "Initial Deposit", "Rate %", "Interest on Deposit", "Additional Contribution", "Total Balance", "Compound Interest", "Total Saving Result"])
     
     # Write data rows
-    for year, values in data["interest"].items():
-        writer.writerow([year, values["interest"], values["total"]])
+    for entry in data.get('schedule', []):
+        writer.writerow([
+            entry.get('year', 'N/A'),
+            entry.get('initialDeposit', 'N/A'),
+            entry.get('rate', 'N/A'),
+            entry.get('interestOnDeposit', 'N/A'),
+            entry.get('additionalContribution', 'N/A'),
+            entry.get('totalBalance', 'N/A'),
+            entry.get('compoundInterest', 'N/A'),
+            entry.get('totalSavingResult', 'N/A')
+        ])
 
     return response
 
+@csrf_exempt
+@require_POST
+def save_json(request):
+    try:
+        # Read JSON data from request
+        data = json.loads(request.body)
+        
+        # Define path for the JSON file
+        file_path = os.path.join('static', 'results.json')
+
+        # Save data to JSON file
+        with open(file_path, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+
+        return JsonResponse({'message': 'Data saved successfully!'})
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
