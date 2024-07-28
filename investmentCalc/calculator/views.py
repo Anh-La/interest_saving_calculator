@@ -21,9 +21,29 @@ from datetime import datetime
 ## library for convert markdown to html
 import markdown
 
-##
+## for save to json
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+
+@csrf_exempt
+@require_POST
+def save_json(request):
+    try:
+        # Read JSON data from request
+        data = json.loads(request.body)
+        
+        # Define path for the JSON file
+        file_path = os.path.join('static', 'results.json')
+
+        # Save data to JSON file
+        with open(file_path, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+
+        return JsonResponse({'message': 'Data saved successfully!'})
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 def read_markdown_file(filepath):
     with open(filepath, 'r') as file:
@@ -303,22 +323,3 @@ def generate_csv(request):
 
     return response
 
-@csrf_exempt
-@require_POST
-def save_json(request):
-    try:
-        # Read JSON data from request
-        data = json.loads(request.body)
-        
-        # Define path for the JSON file
-        file_path = os.path.join('static', 'results.json')
-
-        # Save data to JSON file
-        with open(file_path, 'w') as json_file:
-            json.dump(data, json_file, indent=4)
-
-        return JsonResponse({'message': 'Data saved successfully!'})
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)

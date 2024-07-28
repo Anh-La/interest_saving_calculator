@@ -50,15 +50,22 @@
         }]
     };
 
-    // config - bar chart
+    // Config for the stacked bar chart
     const config = {
         type: 'bar',
         data,
         options: {
-        scales: {
-        }
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    stacked: true,
+                }
+            }
         }
     };
+
     // config - line chart
     const configLine = {
         type: 'line',

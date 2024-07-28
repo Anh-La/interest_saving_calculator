@@ -2,6 +2,12 @@
     height: 300px; /* Adjust the height as needed */
 }
 
+.fixed-size {
+  max-width: 300px; /* Adjust the width as needed */
+  min-width: 200px; /* Ensure the width does not go below this */
+  width: 100%; /* Ensures it uses full width available within its constraints */
+}
+
 .table th, .table td {
   padding: 8px;
   text-align: right; /* Align numbers to the right */

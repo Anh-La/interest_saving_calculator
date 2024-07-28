@@ -108,6 +108,25 @@ function intSchedule() {
         });
     }
 
+    // Populate the table with results
+    const tbody = document.getElementById('yearlyResults');
+    tbody.innerHTML = ''; // Clear existing rows
+
+    results.forEach(result => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${result.year}</td>
+            <td>${result.initial_deposit}</td>
+            <td>${result.rate}</td>
+            <td>${result.interest_on_deposit}</td>
+            <td>${result.additional_contribution}</td>
+            <td>${result.total_balance}</td>
+            <td>${result.compound_interest}</td>
+            <td>${result.total_saving_result}</td>
+        `;
+        tbody.appendChild(row);
+    });
+
     // Set the final values for totals
     document.getElementById('totalYear').innerText = number_of_years.toFixed(0);
     document.getElementById('totalInitialDeposit').innerText = total_deposit.toFixed(2);
@@ -117,66 +136,68 @@ function intSchedule() {
     document.getElementById('totalDeposit').innerText = (total_deposit + total_annual_additional_deposit).toFixed(2);
     document.getElementById('totalCompoundInterest').innerText = total_compound_interest.toFixed(2);
     document.getElementById('totalResult').innerText = total_saving_result.toFixed(2);
-
 }
 
-// Function to send results to Django
-function saveResults() {
-    // Prepare the data from the tables
-    const summaryData = {
-        years: document.getElementById('displayYears').innerText,
-        initialDeposit: document.getElementById('displayInitialDeposit').innerText,
-        additionalSaving: document.getElementById('displayAdditionalSaving').innerText,
-        interest: document.getElementById('displayInterest').innerText,
-        totalSaving: document.getElementById('displayTotalSaving').innerText
-    };
 
-    const scheduleData = [];
-    const rows = document.querySelectorAll('#yearlyResults tr');
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length > 0) {
-            scheduleData.push({
-                year: cells[0].innerText,
-                initialDeposit: cells[1].innerText,
-                rate: cells[2].innerText,
-                interestOnDeposit: cells[3].innerText,
-                additionalContribution: cells[4].innerText,
-                totalBalance: cells[5].innerText,
-                compoundInterest: cells[6].innerText,
-                totalSavingResult: cells[7].innerText
-            });
-        }
-    });
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Function to send results to Django
+    function saveResults() {
+        // Prepare the data from the tables
+        const summaryData = {
+            years: document.getElementById('displayYears').innerText,
+            initialDeposit: document.getElementById('displayInitialDeposit').innerText,
+            additionalSaving: document.getElementById('displayAdditionalSaving').innerText,
+            interest: document.getElementById('displayInterest').innerText,
+            totalSaving: document.getElementById('displayTotalSaving').innerText
+        };
 
-    const dataToSend = {
-        summary: summaryData,
-        schedule: scheduleData
-    };
+        const scheduleData = [];
+        const rows = document.querySelectorAll('#yearlyResults tr');
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length > 0) {
+                scheduleData.push({
+                    year: cells[0].innerText,
+                    initialDeposit: cells[1].innerText,
+                    rate: cells[2].innerText,
+                    interestOnDeposit: cells[3].innerText,
+                    additionalContribution: cells[4].innerText,
+                    totalBalance: cells[5].innerText,
+                    compoundInterest: cells[6].innerText,
+                    totalSavingResult: cells[7].innerText
+                });
+            }
+        });
 
-    // Send data to Django endpoint
-    fetch('/save-json/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken() // Function to get CSRF token from the form
-        },
-        body: JSON.stringify(dataToSend)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
+        const dataToSend = {
+            summary: summaryData,
+            schedule: scheduleData
+        };
 
-// Utility function to get CSRF token
-function getCsrfToken() {
-    const csrfTokenElement = document.querySelector('input[name="csrfmiddlewaretoken"]');
-    return csrfTokenElement ? csrfTokenElement.value : '';
-}
+        // Send data to Django endpoint
+        fetch('/save-json/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken() // Function to get CSRF token from the form
+            },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
 
-// Call saveResults function on button click or form submission
-document.getElementById('saveResultsButton').addEventListener('click', saveResults);
+    // Utility function to get CSRF token
+    function getCsrfToken() {
+        const csrfTokenElement = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        return csrfTokenElement ? csrfTokenElement.value : '';
+    }
+
+    // Call saveResults function on button click or form submission
+    document.getElementById('saveResultsButton').addEventListener('click', saveResults);
+});
