@@ -45,9 +45,71 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 
-// Calculate result and return in the summary
+function intSchedule() {
+    // Ensure return_rate is defined and is a number
+    let return_rate = parseFloat(document.getElementById('return_rate').value) / 100;
+    let starting_amount = parseFloat(document.getElementById('starting_amount').value);
+    let annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
+    let number_of_years = parseInt(document.getElementById('number_of_years').value, 10);
+
+    // Results calculation
+    let total_interest_on_deposit = 0;
+    let total_annual_additional_deposit = 0;
+    let total_saving_result = starting_amount;
+
+    let results = [];
+
+    for (let year = 1; year <= number_of_years; year++) {
+        const interest_on_deposit = total_saving_result * return_rate;
+        total_interest_on_deposit += interest_on_deposit;
+
+        total_annual_additional_deposit += annual_additional_contribution;
+
+        const initial_deposit = total_saving_result;
+        total_saving_result += annual_additional_contribution + interest_on_deposit;
+
+        results.push({
+            year: year,
+            initial_deposit: initial_deposit.toFixed(2),
+            rate: (return_rate * 100).toFixed(2),
+            interest_on_deposit: interest_on_deposit.toFixed(2),
+            additional_contribution: annual_additional_contribution.toFixed(2),
+            total_balance: total_saving_result.toFixed(2)
+        });
+    }
+
+    // Populate the table with results
+    const tbody = document.getElementById('yearlyResults');
+    if (tbody) {
+        tbody.innerHTML = ''; // Clear existing rows
+
+        results.forEach(result => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${result.year}</td>
+                <td>${result.initial_deposit}</td>
+                <td>${result.rate}</td>
+                <td>${result.interest_on_deposit}</td>
+                <td>${result.additional_contribution}</td>
+                <td>${result.total_balance}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Set the final values for totals
+        document.getElementById('totalYear').innerText = number_of_years.toFixed(0);
+        document.getElementById('totalRate').innerText = (return_rate * 100).toFixed(2);
+        document.getElementById('totalInterestOnDeposit').innerText = total_interest_on_deposit.toFixed(2);
+        document.getElementById('totalAdditionalDeposit').innerText = total_annual_additional_deposit.toFixed(2);
+        document.getElementById('totalDeposit').innerText = (starting_amount + total_annual_additional_deposit).toFixed(2);
+        document.getElementById('totalResult').innerText = total_saving_result.toFixed(2);
+    } else {
+        console.error('Element with ID "yearlyResults" not found.');
+    }
+}
+
 function calculator() {
-    //for summary table
+    // For summary table
     const number_of_years = parseFloat(document.getElementById('number_of_years').value);
     const starting_amount = parseFloat(document.getElementById('starting_amount').value);
     const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
@@ -64,79 +126,20 @@ function calculator() {
     document.getElementById('displayInterest').innerText = total_interest.toFixed(2);
     document.getElementById('displayTotalSaving').innerText = total_result.toFixed(2);
     
-    //for schedule table
+    // For schedule table
     intSchedule();
-};
-
-function intSchedule() {
-    // Ensure return_rate is defined and is a number
-    let return_rate = parseFloat(document.getElementById('return_rate').value) / 100;
-    let starting_amount = parseFloat(document.getElementById('starting_amount').value);
-    let annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
-    let number_of_years = parseInt(document.getElementById('number_of_years').value, 10);
-
-    // Results calculation
-    let total_interest_on_deposit = 0;
-    let total_annual_additional_deposit = 0;
-    let total_deposit = starting_amount;
-    let total_compound_interest = 0;
-    let total_saving_result = 0;
-
-    let results = [];
-
-    for (let year = 1; year <= number_of_years; year++) {
-        const interest_on_deposit = starting_amount * return_rate;
-        total_interest_on_deposit += interest_on_deposit;
-
-        total_annual_additional_deposit += annual_additional_contribution;
-
-        const total_balance = starting_amount + total_annual_additional_deposit;
-        const compound_interest = interest_on_deposit;
-
-        total_saving_result = total_balance + compound_interest;
-        starting_amount = total_saving_result;
-
-        results.push({
-            year: year,
-            initial_deposit: year === 1 ? total_deposit.toFixed(2) : '',
-            rate: (return_rate * 100).toFixed(2),
-            interest_on_deposit: interest_on_deposit.toFixed(2),
-            additional_contribution: annual_additional_contribution.toFixed(2),
-            total_balance: total_balance.toFixed(2),
-            compound_interest: compound_interest.toFixed(2),
-            total_saving_result: total_saving_result.toFixed(2)
-        });
-    }
-
-    // Populate the table with results
-    const tbody = document.getElementById('yearlyResults');
-    tbody.innerHTML = ''; // Clear existing rows
-
-    results.forEach(result => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${result.year}</td>
-            <td>${result.initial_deposit}</td>
-            <td>${result.rate}</td>
-            <td>${result.interest_on_deposit}</td>
-            <td>${result.additional_contribution}</td>
-            <td>${result.total_balance}</td>
-            <td>${result.compound_interest}</td>
-            <td>${result.total_saving_result}</td>
-        `;
-        tbody.appendChild(row);
-    });
-
-    // Set the final values for totals
-    document.getElementById('totalYear').innerText = number_of_years.toFixed(0);
-    document.getElementById('totalInitialDeposit').innerText = total_deposit.toFixed(2);
-    document.getElementById('totalRate').innerText = (return_rate * 100).toFixed(2);
-    document.getElementById('totalInterestOnDeposit').innerText = total_interest_on_deposit.toFixed(2);
-    document.getElementById('totalAdditionalDeposit').innerText = total_annual_additional_deposit.toFixed(2);
-    document.getElementById('totalDeposit').innerText = (total_deposit + total_annual_additional_deposit).toFixed(2);
-    document.getElementById('totalCompoundInterest').innerText = total_compound_interest.toFixed(2);
-    document.getElementById('totalResult').innerText = total_saving_result.toFixed(2);
 }
+
+// Initial setup
+document.addEventListener('DOMContentLoaded', function () {
+    intSchedule();
+
+    // Add event listeners to update the table and summary when inputs change
+    document.getElementById('starting_amount').addEventListener('input', calculator);
+    document.getElementById('number_of_years').addEventListener('input', calculator);
+    document.getElementById('return_rate').addEventListener('input', calculator);
+    document.getElementById('annual_additional_contribution').addEventListener('input', calculator);
+});
 
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -162,9 +165,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     rate: cells[2].innerText,
                     interestOnDeposit: cells[3].innerText,
                     additionalContribution: cells[4].innerText,
-                    totalBalance: cells[5].innerText,
-                    compoundInterest: cells[6].innerText,
-                    totalSavingResult: cells[7].innerText
+                    //totalBalance: cells[5].innerText,
+                    //compoundInterest: cells[6].innerText,
+                    totalSavingResult: cells[5].innerText
                 });
             }
         });

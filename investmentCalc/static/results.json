@@ -1,41 +1,35 @@
 {
     "summary": {
         "years": "3",
-        "initialDeposit": "60.00",
-        "additionalSaving": "3.00",
-        "interest": "29.79",
-        "totalSaving": "92.79"
+        "initialDeposit": "100.00",
+        "additionalSaving": "15.00",
+        "interest": "82.75",
+        "totalSaving": "197.75"
     },
     "schedule": [
         {
             "year": "1",
-            "initialDeposit": "60.00",
+            "initialDeposit": "100.00",
             "rate": "10.00",
-            "interestOnDeposit": "6.00",
-            "additionalContribution": "1.00",
-            "totalBalance": "61.00",
-            "compoundInterest": "6.00",
-            "totalSavingResult": "67.00"
+            "interestOnDeposit": "10.00",
+            "additionalContribution": "5.00",
+            "totalSavingResult": "115.00"
         },
         {
             "year": "2",
-            "initialDeposit": "",
+            "initialDeposit": "115.00",
             "rate": "10.00",
-            "interestOnDeposit": "6.70",
-            "additionalContribution": "1.00",
-            "totalBalance": "69.00",
-            "compoundInterest": "6.70",
-            "totalSavingResult": "75.70"
+            "interestOnDeposit": "11.50",
+            "additionalContribution": "5.00",
+            "totalSavingResult": "131.50"
         },
         {
             "year": "3",
-            "initialDeposit": "",
+            "initialDeposit": "131.50",
             "rate": "10.00",
-            "interestOnDeposit": "7.57",
-            "additionalContribution": "1.00",
-            "totalBalance": "78.70",
-            "compoundInterest": "7.57",
-            "totalSavingResult": "86.27"
+            "interestOnDeposit": "13.15",
+            "additionalContribution": "5.00",
+            "totalSavingResult": "149.65"
         }
     ]
 }

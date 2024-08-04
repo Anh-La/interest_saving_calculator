@@ -3,11 +3,7 @@
 	<select onchange="changeChart(this)">
 		<optgroup label="select chart"></optgroup>
 		<option value="bar">Bar</option>
-		<option value="pie">Pie</option>
-		<option value="doughnut">Doughnut</option>
-		<option value="line">Line</option>
-		<option value="radar">Radar</option>
-		</optgroup>
+		<option value="area">Area</option>
 	</select>
 </div>
 
@@ -15,39 +11,45 @@
 <canvas id="myChart"></canvas>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <script>
-    // declare variances
-    const starting_amount = document.getElementById('starting_amount');
-    const number_of_years = document.getElementById('number_of_years');
-    const return_rate = document.getElementById('return_rate');
-    const annual_additional_contribution = document.getElementById('annual_additional_contribution');
+    // Function to calculate results
+    function calculatorChart() {
+        const number_of_years = parseInt(document.getElementById('number_of_years').value, 10);
+        const starting_amount = parseFloat(document.getElementById('starting_amount').value);
+        const return_rate = parseFloat(document.getElementById('return_rate').value) / 100;
+        const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
 
-     // Function to generate labels based on the number of years
-    function generateLabels(years) {
-        let labels = [];
-        for (let i = 1; i <= years; i++) {
-            labels.push(`Year ${i}`);
+        let total_saving_result = starting_amount;
+        let years = [];
+        let deposits = [];
+        let interests = [];
+
+        for (let i = 1; i <= number_of_years; i++) {
+            const interest_on_deposit = total_saving_result * return_rate;
+            total_saving_result += annual_additional_contribution + interest_on_deposit;
+
+            years.push(`Year ${i}`);
+            deposits.push(total_saving_result.toFixed(2));
+            interests.push(interest_on_deposit.toFixed(2));
         }
-        return labels;
-    }
 
-    let labels = generateLabels(parseInt(number_of_years.value));
+        return { years, deposits, interests };
+    }
     
     // setup
     const data = {
-        labels: labels,
-        datasets: [{
-        label: 'Interest',
-        data: [starting_amount.value,annual_additional_contribution.value],
-        backgroundColor: [
-            'rgba(255, 26, 104, 0.2)',
-            'rgba(54, 162, 235, 0.2)'
-        ],
-        borderColor: [
-            'rgba(255, 26, 104, 1)',
-            'rgba(54, 162, 235, 1)'
-        ],
-        borderWidth: 1
-        }]
+        labels: [],
+        datasets: [
+            {
+                label: 'deposit',
+                data: [], // Initialize as an empty array
+                backgroundColor: 'rgb(54, 162, 235)'
+            },
+            {
+                label: 'Interest',
+                data: [], // Initialize as an empty array
+                backgroundColor: 'rgb(75, 192, 192)'
+            },
+        ]
     };
 
     // Config for the stacked bar chart
@@ -55,109 +57,111 @@
         type: 'bar',
         data,
         options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Chart.js Bar Chart - Stacked'
+                },
+            },
+            responsive: true,
             scales: {
                 x: {
                     stacked: true,
                 },
                 y: {
-                    stacked: true,
+                    stacked: true
                 }
             }
         }
     };
 
-    // config - line chart
-    const configLine = {
+    // config - area chart
+    const configArea = {
         type: 'line',
         data,
         options: {
-        scales: {
-        }
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: (ctx) => 'Chart.js Line Chart - stacked=' + ctx.chart.options.scales.y.stacked
+                },
+                tooltip: {
+                    mode: 'index'
+                },
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year'
+                    }
+                },
+                y: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Value'
+                    }
+                }
+            }
         }
     };
-    // config - pie chart
-    const configPie = {
-        type: 'pie',
-        data,
-        options: {
-        scales: {
-        }
-        }
-    };
-    // config - doughnut chart
-    const configDoughnut = {
-        type: 'doughnut',
-        data,
-        options: {
-        scales: {
-        }
-        }
-    };
-    // config - radar chart
-    const configRadar = {
-        type: 'radar',
-        data,
-        options: {
-        scales: {
-        }
-        }
-    };
+    
     // render init block
     let myChart = new Chart(
         document.getElementById('myChart'),
         config
     );
 
-	// update data in chart
+    // update data in chart
     function updateChart(){
-        myChart.config.data.datasets[0].data =[starting_amount.value,annual_additional_contribution.value];
+        // initialise data
+        const { years, deposits, interests } = calculatorChart();
+
+        myChart.data.labels = years;
+        myChart.data.datasets[0].data = deposits;
+        myChart.data.datasets[1].data = interests;
         myChart.update();
 
-        // real-time results feeding from calculation in static java script function
-		calculator();
-    };
+        //parse results from calculation function to the summary and the schedule
+        intSchedule();
+    }
     
     // change chart type
     function changeChart(chartType){
-        myChart.destroy(); //destroy current chart to build the new chart
+        myChart.destroy(); // destroy current chart to build the new chart
 
-        //build new bar chart
-        if (chartType.value ==='bar'){
+        // build new bar chart
+        if (chartType.value === 'bar'){
             myChart = new Chart(
                 document.getElementById('myChart'),
                 config
             );
         }
-            
-        //build new pie chart
-        if (chartType.value ==='pie'){
+         
+        // build new area chart
+        if (chartType.value === 'area'){
             myChart = new Chart(
                 document.getElementById('myChart'),
-                configPie
-            );
-        }
-        //build new line chart
-        if (chartType.value ==='line'){
-            myChart = new Chart(
-                document.getElementById('myChart'),
-                configLine
-            );
-        }
-        //build new doughnut chart
-        if (chartType.value ==='doughnut'){
-            myChart = new Chart(
-                document.getElementById('myChart'),
-                configDoughnut
-            );
-        }
-        //build new radar chart
-        if (chartType.value ==='radar'){
-            myChart = new Chart(
-                document.getElementById('myChart'),
-                configRadar
+                configArea
             );
         }
 
+        updateChart();
     }
 
+    // Initial chart update
+    updateChart();
+
+    // Listen for input changes to update the chart
+    document.getElementById('starting_amount').addEventListener('input', updateChart);
+    document.getElementById('number_of_years').addEventListener('input', updateChart);
+    document.getElementById('return_rate').addEventListener('input', updateChart);
+    document.getElementById('annual_additional_contribution').addEventListener('input', updateChart);
 </script>
