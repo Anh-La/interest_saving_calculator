@@ -1,4 +1,21 @@
 
+<!--Links for generating PDF & CSV-->
+<div class="row col-12 align-items-center">
+    <div class="col-md-6">
+        <div class="d-grid gap-2 d-md-block">
+            <button type="button" id="saveResultsButton" class="btn btn-primary btn-sm">Save Results</button>
+        </div>
+    </div>
+    <div class="col-md-6 d-flex justify-content-end">
+        <a href="{% url 'generate_pdf' %}" download class="me-2">
+            <i class="bi bi-printer" style="font-size: 1.5rem; color: cornflowerblue;"></i>
+        </a>
+        <a href="{% url 'generate_csv' %}" download>
+            <i class="bi bi-filetype-csv" style="font-size: 1.5rem; color: cornflowerblue;"></i>
+        </a>
+    </div>
+</div>
+
 <!--Saving summary table-->
 <table class="table table-primary">
     <tbody>

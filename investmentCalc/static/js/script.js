@@ -45,40 +45,92 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 
-function intSchedule() {
-    // Ensure return_rate is defined and is a number
+function calculator() {
     let return_rate = parseFloat(document.getElementById('return_rate').value) / 100;
     let starting_amount = parseFloat(document.getElementById('starting_amount').value);
     let annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
     let number_of_years = parseInt(document.getElementById('number_of_years').value, 10);
 
-    // Results calculation
-    let total_interest_on_deposit = 0;
-    let total_annual_additional_deposit = 0;
-    let total_saving_result = starting_amount;
+    let frequency = document.getElementById('frequency').value;
+    let frequency1 = document.getElementById('frequency1').value;
+    let periodsPerYear;
+    let periodName;
 
+    switch (frequency) {
+        case 'yearly':
+            periodsPerYear = 1;
+            periodName = 'Year';
+            break;
+        case 'monthly':
+            periodsPerYear = 12;
+            periodName = 'Month';
+            break;
+        case 'fortnightly':
+            periodsPerYear = 26;
+            periodName = 'Fortnight';
+            break;
+        case 'weekly':
+            periodsPerYear = 52;
+            periodName = 'Week';
+            break;
+        case 'daily':
+            periodsPerYear = 365;
+            periodName = 'Day';
+            break;
+        default:
+            periodsPerYear = 1;
+            periodName = 'Year';
+    }
+
+    // Adjust the number_of_years based on the frequency1
+    switch (frequency1) {
+        case 'yearly':
+            totalPeriods = number_of_years;
+            break;
+        case 'monthly':
+            totalPeriods = number_of_years * 12;
+            break;
+        case 'fortnightly':
+            totalPeriods = number_of_years * 26;
+            break;
+        case 'weekly':
+            totalPeriods = number_of_years * 52;
+            break;
+        case 'daily':
+            totalPeriods = number_of_years * 365;
+            break;
+        default:
+            totalPeriods = number_of_years;
+    }
+
+    let total_interest_on_deposit = 0;
+    let total_additional_contribution = 0;
+    let total_saving_result = starting_amount;
     let results = [];
 
-    for (let year = 1; year <= number_of_years; year++) {
-        const interest_on_deposit = total_saving_result * return_rate;
+    for (let period = 1; period <= number_of_years * periodsPerYear; period++) {
+        const interest_on_deposit = total_saving_result * (return_rate / periodsPerYear);
         total_interest_on_deposit += interest_on_deposit;
 
-        total_annual_additional_deposit += annual_additional_contribution;
+        const additional_contribution = annual_additional_contribution;
+        total_additional_contribution += additional_contribution;
 
         const initial_deposit = total_saving_result;
-        total_saving_result += annual_additional_contribution + interest_on_deposit;
+        total_saving_result += additional_contribution + interest_on_deposit;
+
+        const periodLabel = `${periodName} ${period}`; // Increment the period properly for the frequency
 
         results.push({
-            year: year,
+            period: periodLabel,
             initial_deposit: initial_deposit.toFixed(2),
             rate: (return_rate * 100).toFixed(2),
             interest_on_deposit: interest_on_deposit.toFixed(2),
-            additional_contribution: annual_additional_contribution.toFixed(2),
+            additional_contribution: additional_contribution.toFixed(2),
             total_balance: total_saving_result.toFixed(2)
         });
     }
 
-    // Populate the table with results
+    // Populate the table with period results
     const tbody = document.getElementById('yearlyResults');
     if (tbody) {
         tbody.innerHTML = ''; // Clear existing rows
@@ -86,7 +138,7 @@ function intSchedule() {
         results.forEach(result => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${result.year}</td>
+                <td>${result.period}</td>
                 <td>${result.initial_deposit}</td>
                 <td>${result.rate}</td>
                 <td>${result.interest_on_deposit}</td>
@@ -97,42 +149,30 @@ function intSchedule() {
         });
 
         // Set the final values for totals
-        document.getElementById('totalYear').innerText = number_of_years.toFixed(0);
+        document.getElementById('totalYear').innerText = `${number_of_years} ${number_of_years > 1 ? 'Years' : 'Year'}`;
         document.getElementById('totalRate').innerText = (return_rate * 100).toFixed(2);
         document.getElementById('totalInterestOnDeposit').innerText = total_interest_on_deposit.toFixed(2);
-        document.getElementById('totalAdditionalDeposit').innerText = total_annual_additional_deposit.toFixed(2);
-        document.getElementById('totalDeposit').innerText = (starting_amount + total_annual_additional_deposit).toFixed(2);
+        document.getElementById('totalAdditionalDeposit').innerText = total_additional_contribution.toFixed(2);
+        document.getElementById('totalDeposit').innerText = (starting_amount + total_additional_contribution).toFixed(2);
         document.getElementById('totalResult').innerText = total_saving_result.toFixed(2);
+
+        // Return results for use in summary calculator
+        document.getElementById('displayYears').innerText = number_of_years;
+        document.getElementById('displayInitialDeposit').innerText = starting_amount.toFixed(2);
+        document.getElementById('displayAdditionalSaving').innerText = total_additional_contribution.toFixed(2);
+        document.getElementById('displayInterest').innerText = total_interest_on_deposit.toFixed(2);
+        document.getElementById('displayTotalSaving').innerText = total_saving_result.toFixed(2);
+
     } else {
         console.error('Element with ID "yearlyResults" not found.');
+        return {}; // Return empty object if table is not found
     }
 }
 
-function calculator() {
-    // For summary table
-    const number_of_years = parseFloat(document.getElementById('number_of_years').value);
-    const starting_amount = parseFloat(document.getElementById('starting_amount').value);
-    const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
-    const return_rate = parseFloat(document.getElementById('return_rate').value);
-
-    const total_additional_deposit = number_of_years * annual_additional_contribution;
-    const total_interest = ((starting_amount * (1 + return_rate / 100) ** number_of_years) - starting_amount) + 
-                            (total_additional_deposit * ((1 + return_rate / 100) ** number_of_years - 1) / (return_rate / 100));
-    const total_result = starting_amount + total_additional_deposit + total_interest;
-
-    document.getElementById('displayYears').innerText = number_of_years;
-    document.getElementById('displayInitialDeposit').innerText = starting_amount.toFixed(2);
-    document.getElementById('displayAdditionalSaving').innerText = total_additional_deposit.toFixed(2);
-    document.getElementById('displayInterest').innerText = total_interest.toFixed(2);
-    document.getElementById('displayTotalSaving').innerText = total_result.toFixed(2);
-    
-    // For schedule table
-    intSchedule();
-}
 
 // Initial setup
 document.addEventListener('DOMContentLoaded', function () {
-    intSchedule();
+    calculator();
 
     // Add event listeners to update the table and summary when inputs change
     document.getElementById('starting_amount').addEventListener('input', calculator);

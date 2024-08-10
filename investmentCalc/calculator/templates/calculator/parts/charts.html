@@ -1,10 +1,13 @@
-<!--Dropdown button for chart type-->
-<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-	<select onchange="changeChart(this)">
-		<optgroup label="select chart"></optgroup>
-		<option value="bar">Bar</option>
-		<option value="area">Area</option>
-	</select>
+<!--Dropdown buttons for chart type and frequency-->
+<div class="row col-12">
+    <div class="col-md-6 d-grid gap-2 d-md-flex justify-content-md-start">
+        <!-- Chart type dropdown -->
+        <select onchange="changeChart(this)" class="form-select form-select-sm me-2" style="width: auto;">
+            <optgroup label="Select Chart"></optgroup>
+            <option value="bar">Bar</option>
+            <option value="area">Area</option>
+        </select>
+    </div>
 </div>
 
 <!--Canvas for chart-->
@@ -12,156 +15,184 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <script>
     // Function to calculate results
-    function calculatorChart() {
-        const number_of_years = parseInt(document.getElementById('number_of_years').value, 10);
-        const starting_amount = parseFloat(document.getElementById('starting_amount').value);
-        const return_rate = parseFloat(document.getElementById('return_rate').value) / 100;
-        const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
+function calculatorChart() {
+    const number_of_years = parseInt(document.getElementById('number_of_years').value, 10);
+    const starting_amount = parseFloat(document.getElementById('starting_amount').value);
+    const return_rate = parseFloat(document.getElementById('return_rate').value) / 100;
+    const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
 
-        let total_saving_result = starting_amount;
-        let years = [];
-        let deposits = [];
-        let interests = [];
+    let frequency = document.getElementById('frequency').value;
+    let periodsPerYear;
+    let periodName;
 
-        for (let i = 1; i <= number_of_years; i++) {
-            const interest_on_deposit = total_saving_result * return_rate;
-            total_saving_result += annual_additional_contribution + interest_on_deposit;
-
-            years.push(`Year ${i}`);
-            deposits.push(total_saving_result.toFixed(2));
-            interests.push(interest_on_deposit.toFixed(2));
-        }
-
-        return { years, deposits, interests };
+    switch (frequency) {
+        case 'yearly':
+            periodsPerYear = 1;
+            periodName = 'Year';
+            break;
+        case 'monthly':
+            periodsPerYear = 12;
+            periodName = 'Month';
+            break;
+        case 'fortnightly':
+            periodsPerYear = 26;
+            periodName = 'Fortnight';
+            break;
+        case 'weekly':
+            periodsPerYear = 52;
+            periodName = 'Week';
+            break;
+        case 'daily':
+            periodsPerYear = 365;
+            periodName = 'Day';
+            break;
+        default:
+            periodsPerYear = 1;
+            periodName = 'Year';
     }
-    
-    // setup
-    const data = {
-        labels: [],
-        datasets: [
-            {
-                label: 'deposit',
-                data: [], // Initialize as an empty array
-                backgroundColor: 'rgb(54, 162, 235)'
-            },
-            {
-                label: 'Interest',
-                data: [], // Initialize as an empty array
-                backgroundColor: 'rgb(75, 192, 192)'
-            },
-        ]
-    };
 
-    // Config for the stacked bar chart
-    const config = {
-        type: 'bar',
-        data,
-        options: {
-            plugins: {
+    let total_saving_result = starting_amount;
+    let labels = [];
+    let deposits = [];
+    let interests = [];
+
+    // Loop over periods
+    for (let period = 1; period <= number_of_years * periodsPerYear; period++) {
+        const interest_on_deposit = total_saving_result * (return_rate / periodsPerYear);
+        total_saving_result += (annual_additional_contribution / periodsPerYear) + interest_on_deposit;
+
+        labels.push(`${periodName} ${period}`);
+        deposits.push(total_saving_result.toFixed(2));
+        interests.push(interest_on_deposit.toFixed(2));
+    }
+
+    return { labels, deposits, interests };
+}
+
+// setup
+const data = {
+    labels: [], // Initialize as an empty array
+    datasets: [
+        {
+            label: 'Deposit',
+            data: [], // Initialize as an empty array
+            backgroundColor: 'rgb(54, 162, 235)'
+        },
+        {
+            label: 'Interest',
+            data: [], // Initialize as an empty array
+            backgroundColor: 'rgb(75, 192, 192)'
+        },
+    ]
+};
+
+// Config for the stacked bar chart
+const config = {
+    type: 'bar',
+    data,
+    options: {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Savings Growth - Stacked Bar Chart'
+            },
+        },
+        responsive: true,
+        scales: {
+            x: {
+                stacked: true,
+            },
+            y: {
+                stacked: true
+            }
+        }
+    }
+};
+
+// Config for the area chart
+const configArea = {
+    type: 'line',
+    data,
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: (ctx) => 'Savings Growth - Stacked Area Chart'
+            },
+            tooltip: {
+                mode: 'index'
+            },
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+        },
+        scales: {
+            x: {
                 title: {
                     display: true,
-                    text: 'Chart.js Bar Chart - Stacked'
-                },
+                    text: 'Period'
+                }
             },
-            responsive: true,
-            scales: {
-                x: {
-                    stacked: true,
-                },
-                y: {
-                    stacked: true
+            y: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: 'Value'
                 }
             }
         }
-    };
-
-    // config - area chart
-    const configArea = {
-        type: 'line',
-        data,
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: (ctx) => 'Chart.js Line Chart - stacked=' + ctx.chart.options.scales.y.stacked
-                },
-                tooltip: {
-                    mode: 'index'
-                },
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Year'
-                    }
-                },
-                y: {
-                    stacked: true,
-                    title: {
-                        display: true,
-                        text: 'Value'
-                    }
-                }
-            }
-        }
-    };
-    
-    // render init block
-    let myChart = new Chart(
-        document.getElementById('myChart'),
-        config
-    );
-
-    // update data in chart
-    function updateChart(){
-        // initialise data
-        const { years, deposits, interests } = calculatorChart();
-
-        myChart.data.labels = years;
-        myChart.data.datasets[0].data = deposits;
-        myChart.data.datasets[1].data = interests;
-        myChart.update();
-
-        //parse results from calculation function to the summary and the schedule
-        intSchedule();
     }
-    
-    // change chart type
-    function changeChart(chartType){
-        myChart.destroy(); // destroy current chart to build the new chart
+};
 
-        // build new bar chart
-        if (chartType.value === 'bar'){
-            myChart = new Chart(
-                document.getElementById('myChart'),
-                config
-            );
-        }
-         
-        // build new area chart
-        if (chartType.value === 'area'){
-            myChart = new Chart(
-                document.getElementById('myChart'),
-                configArea
-            );
-        }
+// Render the initial chart
+let myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+);
 
-        updateChart();
+// Update data in the chart
+function updateChart() {
+    const { labels, deposits, interests } = calculatorChart();
+
+    myChart.data.labels = labels;
+    myChart.data.datasets[0].data = deposits;
+    myChart.data.datasets[1].data = interests;
+    myChart.update();
+
+    // Parse results from calculation function to the summary and the schedule
+    calculator();
+}
+
+// Change chart type
+function changeChart(chartType) {
+    myChart.destroy(); // Destroy current chart to build the new chart
+
+    if (chartType.value === 'bar') {
+        myChart = new Chart(
+            document.getElementById('myChart'),
+            config
+        );
+    } else if (chartType.value === 'area') {
+        myChart = new Chart(
+            document.getElementById('myChart'),
+            configArea
+        );
     }
 
-    // Initial chart update
     updateChart();
+}
 
-    // Listen for input changes to update the chart
-    document.getElementById('starting_amount').addEventListener('input', updateChart);
-    document.getElementById('number_of_years').addEventListener('input', updateChart);
-    document.getElementById('return_rate').addEventListener('input', updateChart);
-    document.getElementById('annual_additional_contribution').addEventListener('input', updateChart);
+// Initial chart update
+updateChart();
+
+// Listen for input changes to update the chart
+document.getElementById('starting_amount').addEventListener('input', updateChart);
+document.getElementById('number_of_years').addEventListener('input', updateChart);
+document.getElementById('return_rate').addEventListener('input', updateChart);
+document.getElementById('annual_additional_contribution').addEventListener('input', updateChart);
+document.getElementById('frequency').addEventListener('change', updateChart); // Add event listener for frequency change
+
 </script>
