@@ -29,14 +29,14 @@
             <div class="col-6">
                 <label for="number_of_years">How long?</label>
                 <!-- 2a-Year field -->
-                <input  onchange="updateChart()" type="number" id="number_of_years" name="number_of_years" class="form-control">
+                <input type="number" id="number_of_years" name="number_of_years" class="form-control">
                 <!-- 2b-Year Range -->
-                <input onchange="updateChart()" type="range" id="number_of_years_range" name="number_of_years_range" min="0" max="1000" value="0" class="form-range">      
+                <input type="range" id="number_of_years_range" name="number_of_years_range" min="0" max="1000" value="0" class="form-range">
             </div>  
             <!-- Frequency dropdown -->
             <div class="col-6">
-                <label for="frequency1">Frequency</label>
-                <select id="frequency1" name="frequency1" class="form-select form-select-sm">
+                <label for="frequency">Period</label>
+                <select id="frequency" name="frequency" class="form-select form-select-sm">
                     <option value="yearly">Yearly</option>
                     <option value="monthly">Monthly</option>
                     <option value="fortnightly">Fortnightly</option>
@@ -46,6 +46,7 @@
             </div> 
         </div>
     </div>
+    
 
     <div class="form-group">
         <div class="row">
@@ -59,8 +60,8 @@
             </div>
             <!-- Frequency dropdown -->
             <div class="col-6">
-                <label for="frequency">Frequency</label>
-                <select id="frequency" name="frequency" class="form-select form-select-sm">
+                <label for="ExtraPerPeriod">Frequency</label>
+                <select id="ExtraPerPeriod" name="ExtraPerPeriod" class="form-select form-select-sm">
                     <option value="yearly">Yearly</option>
                     <option value="monthly">Monthly</option>
                     <option value="fortnightly">Fortnightly</option>

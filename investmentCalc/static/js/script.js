@@ -42,17 +42,44 @@ document.addEventListener('DOMContentLoaded', function() {
     additionalRangeInput.addEventListener('input', function() {
         additionalAmountInput.value = additionalRangeInput.value;
     });
+
+    const rangeInput = document.getElementById('number_of_years_range');
+    
+    // Function to update the background of a range input
+    function updateRangeBackground(rangeInput) {
+        const value = rangeInput.value;
+        const min = rangeInput.min ? rangeInput.min : 0;
+        const max = rangeInput.max ? rangeInput.max : 100;
+        
+        const percentage = (value - min) / (max - min) * 100;
+        
+        rangeInput.style.setProperty('--value', `${percentage}%`);
+    }
+
+    // Select all range inputs within the form
+    const rangeInputs = document.querySelectorAll('form#dataForm input[type="range"]');
+
+    // Initialize the background for all range inputs on page load
+    rangeInputs.forEach(function(rangeInput) {
+        updateRangeBackground(rangeInput);
+
+        // Add event listener to update background on input change
+        rangeInput.addEventListener('input', function() {
+            updateRangeBackground(rangeInput);
+        });
+    });
     
 });
+
 
 function calculator() {
     let return_rate = parseFloat(document.getElementById('return_rate').value) / 100;
     let starting_amount = parseFloat(document.getElementById('starting_amount').value);
     let annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
-    let number_of_years = parseInt(document.getElementById('number_of_years').value, 10);
+    let number_of_periods = parseInt(document.getElementById('number_of_years').value, 10);
 
     let frequency = document.getElementById('frequency').value;
-    let frequency1 = document.getElementById('frequency1').value;
+    let ExtraPerPeriod = document.getElementById('ExtraPerPeriod').value;
     let periodsPerYear;
     let periodName;
 
@@ -82,25 +109,26 @@ function calculator() {
             periodName = 'Year';
     }
 
-    // Adjust the number_of_years based on the frequency1
-    switch (frequency1) {
+    // Calculate additional contribution per period based on ExtraPerPeriod
+    let additional_contribution_per_period;
+    switch (ExtraPerPeriod) {
         case 'yearly':
-            totalPeriods = number_of_years;
+            additional_contribution_per_period = (annual_additional_contribution / 1)/ periodsPerYear;
             break;
         case 'monthly':
-            totalPeriods = number_of_years * 12;
+            additional_contribution_per_period = (annual_additional_contribution * 12)/ periodsPerYear;
             break;
         case 'fortnightly':
-            totalPeriods = number_of_years * 26;
+            additional_contribution_per_period = (annual_additional_contribution * 26)/ periodsPerYear;
             break;
         case 'weekly':
-            totalPeriods = number_of_years * 52;
+            additional_contribution_per_period = (annual_additional_contribution * 52)/ periodsPerYear;
             break;
         case 'daily':
-            totalPeriods = number_of_years * 365;
+            additional_contribution_per_period = (annual_additional_contribution * 365)/ periodsPerYear;
             break;
         default:
-            totalPeriods = number_of_years;
+            additional_contribution_per_period = (annual_additional_contribution / 1)/ periodsPerYear;
     }
 
     let total_interest_on_deposit = 0;
@@ -108,24 +136,24 @@ function calculator() {
     let total_saving_result = starting_amount;
     let results = [];
 
-    for (let period = 1; period <= number_of_years * periodsPerYear; period++) {
+    // Loop through the total number of periods
+    for (let period = 1; period <= number_of_periods; period++) {
         const interest_on_deposit = total_saving_result * (return_rate / periodsPerYear);
         total_interest_on_deposit += interest_on_deposit;
 
-        const additional_contribution = annual_additional_contribution;
-        total_additional_contribution += additional_contribution;
+        total_additional_contribution += additional_contribution_per_period;
 
         const initial_deposit = total_saving_result;
-        total_saving_result += additional_contribution + interest_on_deposit;
+        total_saving_result += additional_contribution_per_period + interest_on_deposit;
 
-        const periodLabel = `${periodName} ${period}`; // Increment the period properly for the frequency
+        const periodLabel = `${periodName} ${period}`; // Adjust label for each period based on frequency
 
         results.push({
             period: periodLabel,
             initial_deposit: initial_deposit.toFixed(2),
             rate: (return_rate * 100).toFixed(2),
             interest_on_deposit: interest_on_deposit.toFixed(2),
-            additional_contribution: additional_contribution.toFixed(2),
+            additional_contribution: additional_contribution_per_period.toFixed(2),
             total_balance: total_saving_result.toFixed(2)
         });
     }
@@ -149,7 +177,7 @@ function calculator() {
         });
 
         // Set the final values for totals
-        document.getElementById('totalYear').innerText = `${number_of_years} ${number_of_years > 1 ? 'Years' : 'Year'}`;
+        document.getElementById('totalYear').innerText = `${number_of_periods} ${number_of_periods > 1 ? periodName + 's' : periodName}`;
         document.getElementById('totalRate').innerText = (return_rate * 100).toFixed(2);
         document.getElementById('totalInterestOnDeposit').innerText = total_interest_on_deposit.toFixed(2);
         document.getElementById('totalAdditionalDeposit').innerText = total_additional_contribution.toFixed(2);
@@ -157,7 +185,7 @@ function calculator() {
         document.getElementById('totalResult').innerText = total_saving_result.toFixed(2);
 
         // Return results for use in summary calculator
-        document.getElementById('displayYears').innerText = number_of_years;
+        document.getElementById('displayYears').innerText = number_of_periods;
         document.getElementById('displayInitialDeposit').innerText = starting_amount.toFixed(2);
         document.getElementById('displayAdditionalSaving').innerText = total_additional_contribution.toFixed(2);
         document.getElementById('displayInterest').innerText = total_interest_on_deposit.toFixed(2);
@@ -169,7 +197,6 @@ function calculator() {
     }
 }
 
-
 // Initial setup
 document.addEventListener('DOMContentLoaded', function () {
     calculator();
@@ -180,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('return_rate').addEventListener('input', calculator);
     document.getElementById('annual_additional_contribution').addEventListener('input', calculator);
 });
-
 
 document.addEventListener('DOMContentLoaded', (event) => {
     // Function to send results to Django
@@ -205,8 +231,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     rate: cells[2].innerText,
                     interestOnDeposit: cells[3].innerText,
                     additionalContribution: cells[4].innerText,
-                    //totalBalance: cells[5].innerText,
-                    //compoundInterest: cells[6].innerText,
                     totalSavingResult: cells[5].innerText
                 });
             }
