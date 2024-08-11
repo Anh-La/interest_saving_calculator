@@ -11,7 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.graphics.shapes import Drawing
-from reportlab.graphics.charts.barcharts import VerticalBarChart
+from reportlab.graphics.charts.piecharts import Pie
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.pdfgen import canvas
@@ -67,7 +67,7 @@ class Index(View):
             'html_content': html_content
         }
 
-        return render(request, 'calculator/index.html', context)
+        return render(request, 'index.html', context)
 
     def post(self, request):
         form = InvestmentForm(request.POST)
@@ -80,7 +80,7 @@ class Index(View):
 
         if form.is_valid():
             # Set up default values
-            number_of_years =form.cleaned_data['number_of_years']
+            number_of_periods =form.cleaned_data['number_of_periods']
             initial_deposit = form.cleaned_data['starting_amount']
             intereset_rate = form.cleaned_data['return_rate'] / 100
             total_deposit = initial_deposit
@@ -89,7 +89,7 @@ class Index(View):
             total_additional_contribution = form.cleaned_data['annual_additional_contribution']
             yearly_results = {}  # range    
 
-            for i in range(1, int(number_of_years + 1)):
+            for i in range(1, int(number_of_periods + 1)):
                 yearly_results[i] = {}
 
                 # Calculate the interest
@@ -112,12 +112,12 @@ class Index(View):
                 # Set data for JSON file
                 data = {
                     # Input
-                    'number_of_years': int(form.cleaned_data['number_of_years']),
+                    'number_of_periods': int(form.cleaned_data['number_of_periods']),
                     'rate_of_return': float(form.cleaned_data['return_rate']),
                     'original_investment': float(form.cleaned_data['starting_amount']),
                     'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
                     'total_interest': round(total_result-total_deposit, 2),
-                    'total_deposit': float(form.cleaned_data['starting_amount']) + (float(form.cleaned_data['annual_additional_contribution'])*int(form.cleaned_data['number_of_years'])),
+                    'total_deposit': float(form.cleaned_data['starting_amount']) + (float(form.cleaned_data['annual_additional_contribution'])*int(form.cleaned_data['number_of_periods'])),
                     # Output 
                     'total_result': round(total_result, 2),
                     'interest': yearly_results,  # Outcomes from loop function
@@ -138,22 +138,22 @@ class Index(View):
                     # README content
                     'html_content': html_content,
                     # input
-                    'total_deposit': round(total_deposit+(interest_on_deposit*number_of_years),2),
+                    'total_deposit': round(total_deposit+(interest_on_deposit*number_of_periods),2),
                     'total_result': round(total_result, 2), 
                     'yearly_results': yearly_results,
-                    'number_of_years': int(form.cleaned_data['number_of_years']),
+                    'number_of_periods': int(form.cleaned_data['number_of_periods']),
                     'rate_of_return': float(form.cleaned_data['return_rate']),
                     'original_investment': float(form.cleaned_data['starting_amount']),
                     'additional_investment': float(form.cleaned_data['annual_additional_contribution']),
-                    'total_additional_deposit':float(form.cleaned_data['annual_additional_contribution'])*int(form.cleaned_data['number_of_years']),
+                    'total_additional_deposit':float(form.cleaned_data['annual_additional_contribution'])*int(form.cleaned_data['number_of_periods']),
                     'form': form,
                     'total_interest': round(total_result-total_deposit, 2),
                     'interest_on_deposit':round(interest_on_deposit,2),
-                    'total_interest_on_deposit':round(interest_on_deposit*number_of_years,2)
+                    'total_interest_on_deposit':round(interest_on_deposit*number_of_periods,2)
                 }
 
             # Render the template
-            return render(request, 'calculator/index.html', context)
+            return render(request, 'index.html', context)
         else:
 
             context = {
@@ -161,7 +161,7 @@ class Index(View):
                 'html_content': html_content
             }
 
-            return render(request, 'calculator/index.html', context)
+            return render(request, 'index.html', context)
         
 def generate_pdf(request):
     # Read JSON data from a file
@@ -210,12 +210,17 @@ def generate_pdf(request):
     story.append(Paragraph(f"Total Saving: ${summary.get('totalSaving', 'N/A')}", normal_style))
     story.append(Spacer(1, 12))
 
+    # Create the bar chart and add it to the story
+    bar_chart_drawing = create_pie_chart(data)
+    story.append(bar_chart_drawing)
+    story.append(Spacer(1, 12))
+
     # Add the schedule as a table
     story.append(Paragraph("Interest Details", subtitle_style))
     
     # Prepare table data
     table_data = [
-        ['Year', 'Initial Deposit', 'Rate %', 'Interest on Deposit', 'Additional Contribution', 'Total Balance', 'Compound Interest', 'Total Saving Result']
+        ['Year', 'Initial Deposit', 'Rate %', 'Interest on Deposit', 'Additional Contribution', 'Total Saving Result']
     ]
     
     for entry in data.get('schedule', []):
@@ -225,8 +230,6 @@ def generate_pdf(request):
             entry.get('rate', 'N/A'),
             entry.get('interestOnDeposit', 'N/A'),
             entry.get('additionalContribution', 'N/A'),
-            entry.get('totalBalance', 'N/A'),
-            entry.get('compoundInterest', 'N/A'),
             entry.get('totalSavingResult', 'N/A')
         ])
 
@@ -258,27 +261,39 @@ def generate_pdf(request):
 
     return response
 
-def create_bar_chart(data):
-    drawing = Drawing(400, 200)
-    bc = VerticalBarChart()
-    bc.x = 50
-    bc.y = 50
-    bc.height = 125
-    bc.width = 300
+def create_pie_chart(data):
+    drawing = Drawing(400, 300)
 
-    # Add data to the bar chart
-    bc.data = [list(data['interest'][str(year)]['interest'] for year in range(1, data['number_of_years'] + 1))]
-    bc.categoryAxis.categoryNames = [str(year) for year in range(1, data['number_of_years'] + 1)]
+    # Extract the data for the pie chart
+    schedule = data.get('schedule', [])
+    
+    # Prepare data for the pie chart
+    total_initial_deposit = sum(float(entry.get('initialDeposit', 0)) for entry in schedule)
+    total_extra_saving = sum(float(entry.get('additionalContribution', 0)) for entry in schedule)
+    total_interest = sum(float(entry.get('interestOnDeposit', 0)) for entry in schedule)
 
-    # Set the value axis properties
-    bc.valueAxis.valueMin = 0
-    bc.valueAxis.valueMax = max(bc.data[0]) * 1.1
-    bc.valueAxis.valueStep = max(bc.data[0]) / 5
+    # Pie chart data
+    pie_data = [
+        ('Initial Deposit', total_initial_deposit),
+        ('Extra Saving', total_extra_saving),
+        ('Interest', total_interest)
+    ]
 
-    # Change the color of the bars to green
-    bc.bars.fillColor = colors.green
+    # Create the Pie chart
+    pie_chart = Pie()
+    pie_chart.x = 50
+    pie_chart.y = 50
+    pie_chart.width = 200
+    pie_chart.height = 200
+    pie_chart.data = [data[1] for data in pie_data]
+    pie_chart.labels = [data[0] for data in pie_data]
+    pie_chart.slices[0].fillColor = colors.blue
+    pie_chart.slices[1].fillColor = colors.orange
+    pie_chart.slices[2].fillColor = colors.green
 
-    drawing.add(bc)
+    # Add the Pie chart to the drawing
+    drawing.add(pie_chart)
+
     return drawing
 
 def generate_csv(request):
@@ -316,8 +331,6 @@ def generate_csv(request):
             entry.get('rate', 'N/A'),
             entry.get('interestOnDeposit', 'N/A'),
             entry.get('additionalContribution', 'N/A'),
-            entry.get('totalBalance', 'N/A'),
-            entry.get('compoundInterest', 'N/A'),
             entry.get('totalSavingResult', 'N/A')
         ])
 

@@ -1,9 +1,9 @@
-{% extends 'calculator/parts/base.html' %}
+{% extends 'parts/base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
 <!-- Top nav bar -->
 <div>
-	{% include 'calculator/parts/navbar.html' %}
+	{% include 'parts/navbar.html' %}
 </div>
 </br>
 <!-- body -->
@@ -42,7 +42,7 @@
 	<div class="row">
 		<div class="col-12 col-md-3">
 			<div class="p-3 border bg-light">
-				{% include 'calculator/parts/calculator.html' %}
+				{% include 'calculator/calculator.html' %}
 			</div>
 		</div>
 
@@ -50,18 +50,18 @@
 			<div class="row">
 				<div class="col-12 col-lg-6">
 					<div class="p-3 border bg-light table-responsive">
-						{% include 'calculator/parts/summary.html' %}
+						{% include 'calculator/summary.html' %}
 					</div>
 				</div>
 				<div class="col-12 col-lg-6">
 					<div id="results" class="p-3 border bg-light fixed-height">
-						{% include 'calculator/parts/charts.html' %}
+						{% include 'calculator/charts.html' %}
 					</div>
 				</div>
 			</div>										
 			<br>
 			<div class="container p-3 border bg-light">
-				{% include 'calculator/parts/schedule.html' %}
+				{% include 'calculator/schedule.html' %}
 			</div>
 		</div>
 	</div>

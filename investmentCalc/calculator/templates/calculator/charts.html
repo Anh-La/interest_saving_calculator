@@ -16,7 +16,7 @@
 <script>
     // Function to calculate results
 function calculatorChart() {
-    const number_of_years = parseInt(document.getElementById('number_of_years').value, 10);
+    const number_of_periods = parseInt(document.getElementById('number_of_periods').value, 10);
     const starting_amount = parseFloat(document.getElementById('starting_amount').value);
     const return_rate = parseFloat(document.getElementById('return_rate').value) / 100;
     const annual_additional_contribution = parseFloat(document.getElementById('annual_additional_contribution').value);
@@ -53,20 +53,22 @@ function calculatorChart() {
 
     let total_saving_result = starting_amount;
     let labels = [];
+    let initial_deposit = [];
     let deposits = [];
     let interests = [];
 
     // Loop over periods
-    for (let period = 1; period <= number_of_years * periodsPerYear; period++) {
+    for (let period = 1; period <= number_of_periods; period++) {
         const interest_on_deposit = total_saving_result * (return_rate / periodsPerYear);
         total_saving_result += (annual_additional_contribution / periodsPerYear) + interest_on_deposit;
 
         labels.push(`${periodName} ${period}`);
+        initial_deposit.push(starting_amount.toFixed(2));
         deposits.push(total_saving_result.toFixed(2));
         interests.push(interest_on_deposit.toFixed(2));
     }
 
-    return { labels, deposits, interests };
+    return { labels, initial_deposit, deposits, interests };
 }
 
 // setup
@@ -74,7 +76,12 @@ const data = {
     labels: [], // Initialize as an empty array
     datasets: [
         {
-            label: 'Deposit',
+            label: 'Initial Deposit',
+            data: [], // Initialize as an empty array
+            backgroundColor: 'rgb(0, 0, 139)'
+        },
+        {
+            label: 'Extra Saving',
             data: [], // Initialize as an empty array
             backgroundColor: 'rgb(54, 162, 235)'
         },
@@ -155,15 +162,16 @@ let myChart = new Chart(
 
 // Update data in the chart
 function updateChart() {
-    const { labels, deposits, interests } = calculatorChart();
+    const { labels, initial_deposit, deposits, interests } = calculatorChart();
 
     myChart.data.labels = labels;
-    myChart.data.datasets[0].data = deposits;
-    myChart.data.datasets[1].data = interests;
+    myChart.data.datasets[0].data = initial_deposit;
+    myChart.data.datasets[1].data = deposits;
+    myChart.data.datasets[2].data = interests;
     myChart.update();
 
     // Parse results from calculation function to the summary and the schedule
-    calculator();
+    //calculator();
 }
 
 // Change chart type
@@ -190,7 +198,7 @@ updateChart();
 
 // Listen for input changes to update the chart
 document.getElementById('starting_amount').addEventListener('input', updateChart);
-document.getElementById('number_of_years').addEventListener('input', updateChart);
+document.getElementById('number_of_periods').addEventListener('input', updateChart);
 document.getElementById('return_rate').addEventListener('input', updateChart);
 document.getElementById('annual_additional_contribution').addEventListener('input', updateChart);
 document.getElementById('frequency').addEventListener('change', updateChart); // Add event listener for frequency change
